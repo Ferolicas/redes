@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server'
 import { sanityClient } from '../../../../../lib/sanity'
 
+// Next.js 15 compatible route handler
+
 export async function GET(
   request: Request,
   { params }: { params: Promise<{ ketoCode: string; transactionId: string }> }
