@@ -167,20 +167,21 @@ export const transaction = defineType({
       createdAt: 'createdAt',
       product: 'productId.title',
     },
-    prepare(selection) {
+    prepare(selection: any) {
       const { customerEmail, customerName, amount, status, ketoCode, createdAt, product } = selection
       const date = createdAt ? new Date(createdAt).toLocaleDateString() : ''
-      const statusEmoji = {
+      const statusEmoji: Record<string, string> = {
         success: '✅',
         pending: '⏳',
         failed: '❌',
         refunded: '🔄',
         canceled: '⚠️',
-      }[status] || '❓'
+      }
+      const emoji = statusEmoji[status as string] || '❓'
       
       return {
         title: `${customerName || customerEmail} - €${amount}`,
-        subtitle: `${statusEmoji} ${product} - ${ketoCode} - ${date}`,
+        subtitle: `${emoji} ${product} - ${ketoCode} - ${date}`,
       }
     },
   },

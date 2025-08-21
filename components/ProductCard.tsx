@@ -1,4 +1,5 @@
 import React from 'react'
+import Image from 'next/image'
 import { Product } from '@/types'
 import { urlFor } from '@/lib/sanity'
 
@@ -17,9 +18,11 @@ export default function ProductCard({ product, onClick }: ProductCardProps) {
     >
       {product.image && (
         <div className="aspect-square mb-3 rounded-lg overflow-hidden bg-gradient-to-br from-blue-500 to-purple-600">
-          <img
+          <Image
             src={urlFor(product.image).width(200).height(200).url()}
             alt={product.title}
+            width={200}
+            height={200}
             className="w-full h-full object-cover"
           />
         </div>

@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Image from 'next/image'
 import { X, Check } from 'lucide-react'
 import { Product } from '@/types'
 import { urlFor } from '@/lib/sanity'
@@ -52,9 +53,11 @@ export default function PurchaseModal({ product, onClose }: PurchaseModalProps) 
         <div className="relative">
           {product.image && (
             <div className="aspect-square w-full bg-gradient-to-br from-blue-500 to-purple-600">
-              <img
+              <Image
                 src={urlFor(product.image).width(400).height(400).url()}
                 alt={product.title}
+                width={400}
+                height={400}
                 className="w-full h-full object-cover rounded-t-2xl"
               />
             </div>

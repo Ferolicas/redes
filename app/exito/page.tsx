@@ -1,10 +1,11 @@
 'use client'
 
+import { Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { CheckCircle, Download, Mail } from 'lucide-react'
 import Link from 'next/link'
 
-export default function ExitoPage() {
+function ExitoContent() {
   const searchParams = useSearchParams()
   const sessionId = searchParams.get('session_id')
 
@@ -59,5 +60,20 @@ export default function ExitoPage() {
         </div>
       </div>
     </div>
+  )
+}
+
+export default function ExitoPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gradient-to-br from-slate-950 via-purple-950 to-slate-950 flex items-center justify-center p-4">
+        <div className="max-w-md w-full bg-white rounded-2xl p-8 text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Cargando...</p>
+        </div>
+      </div>
+    }>
+      <ExitoContent />
+    </Suspense>
   )
 }

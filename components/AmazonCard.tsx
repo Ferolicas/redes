@@ -1,4 +1,5 @@
 import React from 'react'
+import Image from 'next/image'
 import { AmazonList } from '@/types'
 import { urlFor } from '@/lib/sanity'
 import { ExternalLink } from 'lucide-react'
@@ -21,9 +22,11 @@ export default function AmazonCard({ list }: AmazonCardProps) {
     >
       {list.image && (
         <div className="w-16 h-16 rounded-lg overflow-hidden bg-gradient-to-br from-orange-500 to-yellow-600 flex-shrink-0">
-          <img
+          <Image
             src={urlFor(list.image).width(64).height(64).url()}
             alt={list.title}
+            width={64}
+            height={64}
             className="w-full h-full object-cover"
           />
         </div>

@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
+import Link from 'next/link'
 import { 
   Plus, 
   TrendingUp, 
@@ -63,10 +64,10 @@ export default function AdminPage() {
         {/* Header */}
         <div className="text-center mb-12">
           <div className="flex justify-between items-center mb-8">
-            <a href="/" className="btn btn-secondary">
+            <Link href="/" className="btn btn-secondary">
               <Home size={20} />
               Volver al inicio
-            </a>
+            </Link>
             <div className="flex gap-4">
               <button
                 onClick={() => setShowProductModal(true)}
