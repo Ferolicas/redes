@@ -41,9 +41,21 @@ export interface Transaction {
 }
 
 export interface DashboardStats {
-  dailySales: { count: number; amount: number; net: number }
-  monthlySales: { count: number; amount: number; net: number }
-  totalSales: { count: number; amount: number; net: number }
+  dailySales: {
+    count: number
+    amount: number
+    net: number
+  }
+  monthlySales: {
+    count: number
+    amount: number
+    net: number
+  }
+  totalSales: {
+    count: number
+    amount: number
+    net: number
+  }
   monthlyIVA: number
   monthlyIRPF: number
   totalIVA: number

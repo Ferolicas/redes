@@ -1,12 +1,41 @@
 {
+  "name": "storeplanetaketo",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "type-check": "tsc --noEmit"
+  },
   "dependencies": {
     "@sanity/client": "^7.9.0",
     "@sanity/image-url": "^1.1.0",
+    "@sanity/types": "^4.5.0",
+    "@sanity/vision": "^4.5.0",
     "@stripe/stripe-js": "^7.8.0",
+    "@tanstack/query-core": "^5.85.5",
     "@tanstack/react-query": "^5.85.5",
     "date-fns": "^4.1.0",
     "lucide-react": "^0.540.0",
+    "next": "^15.1.4",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1",
     "resend": "^6.0.1",
-    "stripe": "^18.4.0"
+    "sanity": "^4.5.0",
+    "stripe": "^18.4.0",
+    "styled-components": "^6.1.19"
+  },
+  "devDependencies": {
+    "@types/node": "^20.19.11",
+    "@types/react": "^18.3.23",
+    "@types/react-dom": "^18",
+    "autoprefixer": "^10",
+    "eslint": "^8",
+    "eslint-config-next": "15.1.4",
+    "postcss": "^8",
+    "tailwindcss": "^3.4.0",
+    "typescript": "^5"
   }
 }
