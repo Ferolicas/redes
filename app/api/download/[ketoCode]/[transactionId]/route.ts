@@ -3,10 +3,10 @@ import { sanityClient } from '../../../../../lib/sanity'
 
 export async function GET(
   request: Request,
-  { params }: { params: { ketoCode: string; transactionId: string } }
+  { params }: { params: Promise<{ ketoCode: string; transactionId: string }> }
 ) {
   try {
-    const { ketoCode, transactionId } = params
+    const { ketoCode, transactionId } = await params
 
     // Verificar transacción
     const transaction = await sanityClient.fetch(`
