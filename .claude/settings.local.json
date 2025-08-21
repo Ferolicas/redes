@@ -12,7 +12,8 @@
       "Bash(mkdir:*)",
       "Bash(npx tsc:*)",
       "Bash(npm ls:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(rm:*)"
     ],
     "deny": [],
     "ask": []
