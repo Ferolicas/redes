@@ -131,46 +131,61 @@ export default function LinksPage() {
                   onClick={() => setSelectedProduct(product)}
                   className="h-full rounded-xl bg-white/10 backdrop-blur-md border border-white/20 p-3 hover:bg-white/20 transition-all cursor-pointer group"
                 >
-                  <div className="h-full flex flex-col">
-                    {product.image && (
-                      <img 
-                        src={product.image} 
-                        alt={product.title}
-                        className="w-full h-20 sm:h-24 object-cover rounded-lg mb-2 group-hover:scale-105 transition-transform"
-                      />
-                    )}
-                    <h3 className="text-sm sm:text-base font-semibold text-white mb-1 line-clamp-2 leading-tight">
-                      {product.title}
-                    </h3>
-                    <p className="text-white/70 text-xs mb-2 line-clamp-2 flex-1 leading-tight">
-                      {product.description}
-                    </p>
-                    <div className="flex items-end justify-between">
-                      <div className="text-left">
-                        {product.originalPrice && product.originalPrice > product.price && (
-                          <>
-                            <span className="text-white/50 line-through text-xs block">
-                              €{product.originalPrice}
-                            </span>
-                            <div className="flex items-center gap-2">
-                              <span className="text-white font-bold text-sm sm:text-base">
-                                €{product.price}
-                              </span>
-                              <span className="text-green-400 text-xs font-medium">
-                                ({Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)}% off)
-                              </span>
-                            </div>
-                          </>
-                        )}
-                        {(!product.originalPrice || product.originalPrice <= product.price) && (
-                          <span className="text-white font-bold text-sm sm:text-base">
-                            €{product.price}
-                          </span>
-                        )}
+                  <div className="h-full flex gap-2">
+                    {/* 50% para imagen */}
+                    <div className="w-1/2 flex-shrink-0">
+                      {product.image ? (
+                        <img 
+                          src={product.image} 
+                          alt={product.title}
+                          className="w-full h-full object-cover rounded-lg group-hover:scale-105 transition-transform"
+                          style={{ padding: '3%' }}
+                        />
+                      ) : (
+                        <div className="w-full h-full bg-white/10 rounded-lg flex items-center justify-center">
+                          <ShoppingBag size={20} className="text-white/50" />
+                        </div>
+                      )}
+                    </div>
+                    
+                    {/* 50% para contenido */}
+                    <div className="w-1/2 flex flex-col justify-between py-1">
+                      <div>
+                        <h3 className="text-sm font-semibold text-white mb-1 line-clamp-2 leading-tight">
+                          {product.title}
+                        </h3>
+                        <p className="text-white/70 text-xs mb-2 line-clamp-2 leading-tight">
+                          {product.description}
+                        </p>
                       </div>
-                      <span className="px-2 py-1 rounded-full bg-white/20 text-white/80 text-xs">
-                        {product.category}
-                      </span>
+                      
+                      <div className="space-y-1">
+                        <div className="text-left">
+                          {product.originalPrice && product.originalPrice > product.price && (
+                            <>
+                              <span className="text-white/50 line-through text-xs block">
+                                €{product.originalPrice}
+                              </span>
+                              <div className="flex items-center gap-1">
+                                <span className="text-white font-bold text-sm">
+                                  €{product.price}
+                                </span>
+                                <span className="text-green-400 text-xs font-medium">
+                                  ({Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)}% off)
+                                </span>
+                              </div>
+                            </>
+                          )}
+                          {(!product.originalPrice || product.originalPrice <= product.price) && (
+                            <span className="text-white font-bold text-sm">
+                              €{product.price}
+                            </span>
+                          )}
+                        </div>
+                        <span className="px-2 py-1 rounded-full bg-white/20 text-white/80 text-xs inline-block">
+                          {product.category}
+                        </span>
+                      </div>
                     </div>
                   </div>
                 </div>

@@ -958,7 +958,7 @@ export default function AdminPage() {
                       key={product._id} 
                       className="flex rounded-2xl bg-slate-800/80 border border-slate-700/50 hover:bg-slate-800 transition-all overflow-hidden h-24"
                     >
-                      {/* 50% para imagen */}
+                      {/* 50% para imagen - UPDATED */}
                       <div className="w-1/2 p-1">
                         {product.image ? (
                           <img 
