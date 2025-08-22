@@ -34,6 +34,7 @@ export default function AdminPage() {
     title: string;
     description: string;
     price: string;
+    originalPrice: string;
     stripePriceId: string;
     category: string;
     file: File | null;
@@ -41,6 +42,7 @@ export default function AdminPage() {
     title: '',
     description: '',
     price: '',
+    originalPrice: '',
     stripePriceId: '',
     category: 'Asesoria',
     file: null
@@ -235,11 +237,20 @@ export default function AdminPage() {
               value={productForm.price}
               onChange={(e) => handleInputChange('price', e.target.value)}
               className="w-full rounded-2xl border border-slate-600 bg-slate-800 p-4 text-white placeholder-slate-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all"
-              placeholder="Precio (€)"
+              placeholder="Precio a Cobrar (€)"
               type="number"
               step="0.01"
               min="0"
               required
+            />
+            <input 
+              value={productForm.originalPrice}
+              onChange={(e) => handleInputChange('originalPrice', e.target.value)}
+              className="w-full rounded-2xl border border-slate-600 bg-slate-800 p-4 text-white placeholder-slate-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all"
+              placeholder="Precio Original (€) - Opcional"
+              type="number"
+              step="0.01"
+              min="0"
             />
             <input 
               value={productForm.stripePriceId}
@@ -790,6 +801,7 @@ export default function AdminPage() {
             title: '',
             description: '',
             price: '',
+            originalPrice: '',
             stripePriceId: '',
             category: 'Asesoria',
             file: null
