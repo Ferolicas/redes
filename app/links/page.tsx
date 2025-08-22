@@ -64,59 +64,61 @@ export default function LinksPage() {
 
   return (
     <div className="h-screen bg-gradient-to-br from-blue-600 via-purple-600 to-blue-800 text-white font-['Inter'] overflow-hidden">
-      {/* Header - 20% */}
-      <div className="h-[20%] px-8 py-6 flex items-center justify-center border-b border-white/10">
-        <div className="text-center max-w-4xl">
-          <div className="flex items-center justify-center gap-6 mb-4">
+      {/* Header - 18% on mobile */}
+      <div className="h-[18vh] px-4 py-3 flex items-center justify-center border-b border-white/10">
+        <div className="text-center w-full max-w-sm">
+          <div className="flex items-center justify-center gap-3 mb-2">
             {webElements?.logo && (
               <img 
                 src={webElements.logo} 
                 alt="Logo" 
-                className="h-16 w-16 object-contain rounded-xl bg-white/10 p-2"
+                className="h-10 w-10 sm:h-12 sm:w-12 object-contain rounded-lg bg-white/10 p-1"
               />
             )}
-            <div>
-              <h1 className="text-4xl font-bold text-white mb-1">
+            <div className="flex-1 min-w-0">
+              <h1 className="text-xl sm:text-2xl font-bold text-white mb-1 truncate">
                 {webElements?.title || 'Planeta Keto'}
               </h1>
-              <p className="text-xl text-white/80">
+              <p className="text-sm sm:text-base text-white/80 truncate">
                 {webElements?.subtitle || '¡Recetas Keto para todos!'}
               </p>
             </div>
           </div>
-          <p className="text-white/70 max-w-2xl mx-auto">
-            {webElements?.description || 'Solo carne, grasas, huevos y verduras • Sin harinas ni edulcorantes'}
-          </p>
+          {webElements?.description && (
+            <p className="text-white/70 text-xs sm:text-sm line-clamp-2">
+              {webElements.description}
+            </p>
+          )}
         </div>
       </div>
 
-      {/* Products Section - 50% */}
-      <div className="h-[50%] px-8 py-6 border-b border-white/10">
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-2xl font-bold text-white flex items-center">
-            <ShoppingBag className="mr-3" size={24} />
-            Productos y Servicios
+      {/* Products Section - 52% on mobile */}
+      <div className="h-[52vh] px-4 py-3 border-b border-white/10">
+        <div className="flex items-center justify-between mb-3">
+          <h2 className="text-lg sm:text-xl font-bold text-white flex items-center">
+            <ShoppingBag className="mr-2" size={18} />
+            Productos
           </h2>
-          <div className="flex gap-2">
+          <div className="flex gap-1">
             <button 
               onClick={() => handleProductsScroll('up')}
               disabled={productsOffset === 0}
               className="p-2 rounded-full bg-white/20 backdrop-blur-md border border-white/30 hover:bg-white/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <ChevronLeft size={20} />
+              <ChevronLeft size={16} />
             </button>
             <button 
               onClick={() => handleProductsScroll('down')}
               disabled={productsOffset >= products.length - 4}
               className="p-2 rounded-full bg-white/20 backdrop-blur-md border border-white/30 hover:bg-white/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <ChevronRight size={20} />
+              <ChevronRight size={16} />
             </button>
           </div>
         </div>
         
-        <div className="h-full max-h-[calc(100%-80px)]">
-          <div className="grid grid-cols-2 gap-6 h-full">
+        <div className="h-[calc(100%-48px)]">
+          <div className="grid grid-cols-2 gap-3 h-full">
             {visibleProducts.map((product: Product, index) => (
               <div 
                 key={product._id}
@@ -124,34 +126,34 @@ export default function LinksPage() {
               >
                 <div 
                   onClick={() => setSelectedProduct(product)}
-                  className="h-full rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 p-6 hover:bg-white/20 transition-all cursor-pointer group"
+                  className="h-full rounded-xl bg-white/10 backdrop-blur-md border border-white/20 p-3 hover:bg-white/20 transition-all cursor-pointer group"
                 >
                   <div className="h-full flex flex-col">
                     {product.image && (
                       <img 
                         src={product.image} 
                         alt={product.title}
-                        className="w-full h-32 object-cover rounded-xl mb-4 group-hover:scale-105 transition-transform"
+                        className="w-full h-20 sm:h-24 object-cover rounded-lg mb-2 group-hover:scale-105 transition-transform"
                       />
                     )}
-                    <h3 className="text-lg font-semibold text-white mb-2 line-clamp-2">
+                    <h3 className="text-sm sm:text-base font-semibold text-white mb-1 line-clamp-2 leading-tight">
                       {product.title}
                     </h3>
-                    <p className="text-white/70 text-sm mb-4 line-clamp-2 flex-1">
+                    <p className="text-white/70 text-xs mb-2 line-clamp-2 flex-1 leading-tight">
                       {product.description}
                     </p>
-                    <div className="flex items-center justify-between">
-                      <div className="text-right">
+                    <div className="flex items-end justify-between">
+                      <div className="text-left">
                         {product.originalPrice && product.originalPrice > product.price && (
-                          <span className="text-white/50 line-through text-sm block">
+                          <span className="text-white/50 line-through text-xs block">
                             €{product.originalPrice}
                           </span>
                         )}
-                        <span className="text-white font-bold text-xl">
+                        <span className="text-white font-bold text-sm sm:text-base">
                           €{product.price}
                         </span>
                       </div>
-                      <span className="px-3 py-1 rounded-full bg-white/20 text-white/80 text-xs">
+                      <span className="px-2 py-1 rounded-full bg-white/20 text-white/80 text-xs">
                         {product.category}
                       </span>
                     </div>
@@ -163,62 +165,62 @@ export default function LinksPage() {
         </div>
       </div>
 
-      {/* Amazon Lists Section - 30% */}
-      <div className="h-[30%] px-8 py-6">
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-2xl font-bold text-white flex items-center">
-            <ExternalLink className="mr-3" size={24} />
-            Listas de Ideas
+      {/* Amazon Lists Section - 30% on mobile */}
+      <div className="h-[30vh] px-4 py-3">
+        <div className="flex items-center justify-between mb-3">
+          <h2 className="text-lg sm:text-xl font-bold text-white flex items-center">
+            <ExternalLink className="mr-2" size={18} />
+            Listas
           </h2>
-          <div className="flex gap-2">
+          <div className="flex gap-1">
             <button 
               onClick={() => handleAmazonScroll('left')}
               className="p-2 rounded-full bg-white/20 backdrop-blur-md border border-white/30 hover:bg-white/30 transition-all"
             >
-              <ChevronLeft size={20} />
+              <ChevronLeft size={16} />
             </button>
             <button 
               onClick={() => handleAmazonScroll('right')}
               className="p-2 rounded-full bg-white/20 backdrop-blur-md border border-white/30 hover:bg-white/30 transition-all"
             >
-              <ChevronRight size={20} />
+              <ChevronRight size={16} />
             </button>
           </div>
         </div>
 
         <div 
           ref={amazonScrollRef}
-          className="flex gap-6 overflow-x-auto h-full max-h-[calc(100%-80px)] pb-4 scrollbar-hide"
+          className="flex gap-3 overflow-x-auto h-[calc(100%-88px)] pb-2 scrollbar-hide"
           style={{ scrollSnapType: 'x mandatory' }}
         >
           {amazonLists.map((list: AmazonList) => (
             <div 
               key={list._id}
-              className="flex-none w-80 h-full"
+              className="flex-none w-64 sm:w-72 h-full"
               style={{ scrollSnapAlign: 'start' }}
             >
               <a
                 href={list.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="block h-full rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 p-6 hover:bg-white/20 transition-all group"
+                className="block h-full rounded-xl bg-white/10 backdrop-blur-md border border-white/20 p-3 hover:bg-white/20 transition-all group"
               >
                 <div className="h-full flex flex-col">
                   {list.image && (
                     <img 
                       src={list.image} 
                       alt={list.title}
-                      className="w-full h-24 object-cover rounded-xl mb-4 group-hover:scale-105 transition-transform"
+                      className="w-full h-16 sm:h-20 object-cover rounded-lg mb-2 group-hover:scale-105 transition-transform"
                     />
                   )}
-                  <h3 className="text-lg font-semibold text-white mb-2 line-clamp-2">
+                  <h3 className="text-sm sm:text-base font-semibold text-white mb-2 line-clamp-2 leading-tight">
                     {list.title}
                   </h3>
                   <div className="flex items-center justify-between mt-auto">
-                    <span className="px-3 py-1 rounded-full bg-white/20 text-white/80 text-xs">
+                    <span className="px-2 py-1 rounded-full bg-white/20 text-white/80 text-xs">
                       {list.category}
                     </span>
-                    <span className="text-white/60 text-sm">
+                    <span className="text-white/60 text-xs">
                       {list.clickCount} clicks
                     </span>
                   </div>
@@ -229,10 +231,10 @@ export default function LinksPage() {
         </div>
 
         {/* Amazon Affiliate Notice */}
-        <div className="mt-4 bg-gradient-to-r from-yellow-500/10 to-orange-500/10 border border-yellow-500/20 rounded-xl p-3">
+        <div className="mt-2 bg-gradient-to-r from-yellow-500/10 to-orange-500/10 border border-yellow-500/20 rounded-lg p-2">
           <p className="text-yellow-100 text-xs text-center">
-            <Sparkles className="inline mr-1" size={14} />
-            <strong>Amazon Afiliados:</strong> Como asociado de Amazon, ganamos con compras cualificadas
+            <Sparkles className="inline mr-1" size={12} />
+            <strong>Amazon Afiliados:</strong> Ganamos con compras cualificadas
           </p>
         </div>
       </div>
