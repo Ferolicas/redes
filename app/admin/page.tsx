@@ -187,7 +187,7 @@ export default function AdminPage() {
       case 'products':
         return {
           title: `${stats?.products?.total || 0} productos`,
-          amount: stats?.products?.dailySales || 0,
+          amount: stats?.products?.total || 0,
           count: stats?.products?.totalSales || 0
         }
       case 'orders':
