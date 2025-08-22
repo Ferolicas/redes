@@ -1,9 +1,10 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { X, Check } from 'lucide-react'
 import { Product } from '@/types'
 import { loadStripe } from '@stripe/stripe-js'
+import { Elements, PaymentElement, useStripe, useElements } from '@stripe/react-stripe-js'
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!)
 
@@ -12,37 +13,105 @@ interface PurchaseModalProps {
   onClose: () => void
 }
 
-export default function PurchaseModal({ product, onClose }: PurchaseModalProps) {
+function CheckoutForm({ product, onClose }: { product: Product; onClose: () => void }) {
+  const stripe = useStripe()
+  const elements = useElements()
   const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
-  const handlePurchase = async () => {
-    setLoading(true)
-    
-    try {
-      const response = await fetch('/api/create-checkout', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          priceId: product.stripePriceId,
-          productId: product._id,
-        }),
-      })
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault()
 
-      const { sessionId } = await response.json()
-      const stripe = await stripePromise
-
-      if (stripe) {
-        await stripe.redirectToCheckout({ sessionId })
-      }
-    } catch (error) {
-      console.error('Error:', error)
-      alert('Error al procesar el pago. Inténtalo de nuevo.')
-    } finally {
-      setLoading(false)
+    if (!stripe || !elements) {
+      return
     }
+
+    setLoading(true)
+    setError(null)
+
+    const { error: submitError } = await elements.submit()
+    if (submitError) {
+      setError(submitError.message || 'Error al procesar el pago')
+      setLoading(false)
+      return
+    }
+
+    const { error: confirmError } = await stripe.confirmPayment({
+      elements,
+      confirmParams: {
+        return_url: `${window.location.origin}/exito`,
+      },
+    })
+
+    if (confirmError) {
+      setError(confirmError.message || 'Error al confirmar el pago')
+    }
+
+    setLoading(false)
   }
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <PaymentElement 
+        options={{
+          layout: "tabs",
+        }}
+      />
+      {error && (
+        <div className="text-red-400 text-sm p-3 bg-red-500/10 rounded-lg border border-red-500/20">
+          {error}
+        </div>
+      )}
+      <button
+        type="submit"
+        disabled={!stripe || loading}
+        className="w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white py-4 rounded-xl 
+                 font-semibold text-lg transition-all hover:shadow-lg hover:scale-105 
+                 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+      >
+        {loading ? 'Procesando...' : `Pagar €${product.price}`}
+      </button>
+    </form>
+  )
+}
+
+export default function PurchaseModal({ product, onClose }: PurchaseModalProps) {
+  const [clientSecret, setClientSecret] = useState<string | null>(null)
+  const [loadingIntent, setLoadingIntent] = useState(true)
+
+  useEffect(() => {
+    const createPaymentIntent = async () => {
+      try {
+        const response = await fetch('/api/create-checkout', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            productId: product._id,
+          }),
+        })
+
+        const data = await response.json()
+        if (data.error) {
+          console.error('Error:', data.error)
+          alert('Error al crear el pago. Inténtalo de nuevo.')
+          onClose()
+          return
+        }
+
+        setClientSecret(data.clientSecret)
+      } catch (error) {
+        console.error('Error:', error)
+        alert('Error al crear el pago. Inténtalo de nuevo.')
+        onClose()
+      } finally {
+        setLoadingIntent(false)
+      }
+    }
+
+    createPaymentIntent()
+  }, [product._id, onClose])
 
   const discountPercentage = product.originalPrice && product.originalPrice > product.price 
     ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
@@ -122,31 +191,41 @@ export default function PurchaseModal({ product, onClose }: PurchaseModalProps) 
         </div>
 
         {/* Payment Section - 40% */}
-        <div className="h-[40%] p-4 flex flex-col justify-center flex-shrink-0">
+        <div className="h-[40%] p-4 flex flex-col flex-shrink-0">
           <h3 className="text-sm font-semibold text-white/90 mb-4 text-center">Finalizar Compra</h3>
           
           <div className="flex-1 flex flex-col justify-center">
-            <button
-              onClick={handlePurchase}
-              disabled={loading}
-              className="w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white py-4 rounded-xl 
-                       font-semibold text-lg transition-all hover:shadow-lg hover:scale-105 
-                       disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none mb-4"
-            >
-              {loading ? 'Procesando...' : 'Comprar Ahora'}
-            </button>
-
-            <div className="text-center space-y-2">
-              <p className="text-xs text-white/60">
-                🔒 Pago seguro con Stripe
-              </p>
-              <p className="text-xs text-white/60">
-                💳 Tarjetas • Apple Pay • Google Pay
-              </p>
-              <p className="text-xs text-white/50">
-                Procesamiento instantáneo y seguro
-              </p>
-            </div>
+            {loadingIntent ? (
+              <div className="flex items-center justify-center py-8">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
+                <span className="ml-3 text-white/70">Preparando pago...</span>
+              </div>
+            ) : clientSecret ? (
+              <Elements
+                stripe={stripePromise}
+                options={{
+                  clientSecret,
+                  appearance: {
+                    theme: 'night',
+                    variables: {
+                      colorPrimary: '#3b82f6',
+                      colorBackground: '#1e293b',
+                      colorText: '#f1f5f9',
+                      colorDanger: '#ef4444',
+                      fontFamily: 'Inter, system-ui, sans-serif',
+                      spacingUnit: '4px',
+                      borderRadius: '8px',
+                    },
+                  },
+                }}
+              >
+                <CheckoutForm product={product} onClose={onClose} />
+              </Elements>
+            ) : (
+              <div className="text-center text-red-400">
+                Error al cargar el formulario de pago
+              </div>
+            )}
           </div>
         </div>
       </div>

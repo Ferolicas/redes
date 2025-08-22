@@ -1,29 +1,44 @@
 import { NextResponse } from 'next/server'
 import { stripe } from '@/lib/stripe'
+import { sanityClient } from '@/lib/sanity'
 
 export async function POST(request: Request) {
   try {
-    const { priceId, productId } = await request.json()
+    const { productId } = await request.json()
 
-    const session = await stripe.checkout.sessions.create({
-      mode: 'payment',
-      payment_method_types: ['card'],
-      line_items: [
-        {
-          price: priceId,
-          quantity: 1,
-        },
-      ],
-      success_url: `${process.env.NEXT_PUBLIC_BASE_URL}/exito?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL}/cancelado`,
+    // Obtener información del producto desde Sanity
+    const product = await sanityClient.fetch(`
+      *[_type == "product" && _id == $productId][0]{
+        _id,
+        title,
+        price,
+        stripePriceId
+      }
+    `, { productId })
+
+    if (!product) {
+      return NextResponse.json({ error: 'Product not found' }, { status: 404 })
+    }
+
+    // Crear Payment Intent
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount: Math.round(product.price * 100), // Stripe usa centavos
+      currency: 'eur',
+      automatic_payment_methods: {
+        enabled: true,
+      },
       metadata: {
-        productId,
+        productId: product._id,
+        productTitle: product.title,
       },
     })
 
-    return NextResponse.json({ sessionId: session.id })
+    return NextResponse.json({ 
+      clientSecret: paymentIntent.client_secret,
+      amount: product.price 
+    })
   } catch (error) {
-    console.error('Error creating checkout session:', error)
-    return NextResponse.json({ error: 'Error creating checkout session' }, { status: 500 })
+    console.error('Error creating payment intent:', error)
+    return NextResponse.json({ error: 'Error creating payment intent' }, { status: 500 })
   }
 }
