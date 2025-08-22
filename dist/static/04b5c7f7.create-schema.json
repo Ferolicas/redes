@@ -1,0 +1,704 @@
+[
+  {
+    "fields": [
+      {
+        "validation": [
+          {
+            "rules": [
+              {
+                "flag": "presence",
+                "constraint": "required"
+              }
+            ],
+            "level": "error"
+          }
+        ],
+        "name": "title",
+        "type": "string",
+        "title": "Título"
+      },
+      {
+        "options": {
+          "source": "title",
+          "maxLength": 96
+        },
+        "validation": [
+          {
+            "rules": [
+              {
+                "flag": "custom"
+              },
+              {
+                "flag": "presence",
+                "constraint": "required"
+              }
+            ],
+            "level": "error"
+          }
+        ],
+        "name": "slug",
+        "type": "slug"
+      },
+      {
+        "rows": 4,
+        "name": "description",
+        "type": "text",
+        "title": "Descripción"
+      },
+      {
+        "validation": [
+          {
+            "rules": [
+              {
+                "flag": "presence",
+                "constraint": "required"
+              },
+              {
+                "flag": "min",
+                "constraint": 0
+              }
+            ],
+            "level": "error"
+          }
+        ],
+        "name": "price",
+        "type": "number",
+        "title": "Precio a Cobrar (€)"
+      },
+      {
+        "validation": [
+          {
+            "rules": [
+              {
+                "flag": "min",
+                "constraint": 0
+              }
+            ],
+            "level": "error"
+          }
+        ],
+        "description": "Precio original antes del descuento (opcional)",
+        "name": "originalPrice",
+        "type": "number",
+        "title": "Precio Original (€)"
+      },
+      {
+        "validation": [
+          {
+            "rules": [
+              {
+                "flag": "presence",
+                "constraint": "required"
+              }
+            ],
+            "level": "error"
+          }
+        ],
+        "name": "stripePriceId",
+        "type": "string",
+        "title": "Stripe Price ID"
+      },
+      {
+        "options": {
+          "hotspot": true
+        },
+        "validation": [
+          {
+            "rules": [
+              {
+                "flag": "presence",
+                "constraint": "required"
+              }
+            ],
+            "level": "error"
+          }
+        ],
+        "fields": [
+          {
+            "name": "alt",
+            "type": "string",
+            "title": "Texto alternativo"
+          }
+        ],
+        "name": "image",
+        "type": "image",
+        "title": "Imagen Principal"
+      },
+      {
+        "options": {
+          "list": [
+            {
+              "title": "Asesoría",
+              "value": "Asesoria"
+            },
+            {
+              "title": "Libro",
+              "value": "Libro"
+            },
+            {
+              "title": "Servicios",
+              "value": "Servicios"
+            }
+          ]
+        },
+        "initialValue": "Asesoria",
+        "validation": [
+          {
+            "rules": [
+              {
+                "flag": "valid",
+                "constraint": [
+                  "Asesoria",
+                  "Libro",
+                  "Servicios"
+                ]
+              },
+              {
+                "flag": "presence",
+                "constraint": "required"
+              }
+            ],
+            "level": "error"
+          }
+        ],
+        "name": "category",
+        "type": "string",
+        "title": "Categoría"
+      },
+      {
+        "options": {
+          "accept": ".pdf"
+        },
+        "hidden": "conditional",
+        "name": "pdfFile",
+        "type": "file",
+        "title": "Archivo PDF (para libros)"
+      },
+      {
+        "initialValue": false,
+        "description": "Mostrar este producto como destacado",
+        "name": "featured",
+        "type": "boolean",
+        "title": "Fijar"
+      },
+      {
+        "name": "createdAt",
+        "type": "datetime",
+        "title": "Fecha de Creación"
+      }
+    ],
+    "name": "product",
+    "type": "document",
+    "title": "Producto"
+  },
+  {
+    "fields": [
+      {
+        "validation": [
+          {
+            "rules": [
+              {
+                "flag": "presence",
+                "constraint": "required"
+              }
+            ],
+            "level": "error"
+          }
+        ],
+        "name": "title",
+        "type": "string",
+        "title": "Título de la Lista"
+      },
+      {
+        "options": {
+          "source": "title",
+          "maxLength": 96
+        },
+        "validation": [
+          {
+            "rules": [
+              {
+                "flag": "custom"
+              },
+              {
+                "flag": "presence",
+                "constraint": "required"
+              }
+            ],
+            "level": "error"
+          }
+        ],
+        "name": "slug",
+        "type": "slug"
+      },
+      {
+        "options": {
+          "list": [
+            {
+              "title": "Cocina Keto",
+              "value": "cooking"
+            },
+            {
+              "title": "Suplementos",
+              "value": "supplements"
+            },
+            {
+              "title": "Utensilios",
+              "value": "utensils"
+            },
+            {
+              "title": "Ingredientes",
+              "value": "ingredients"
+            },
+            {
+              "title": "Libros",
+              "value": "books"
+            },
+            {
+              "title": "Deportes",
+              "value": "sports"
+            }
+          ]
+        },
+        "validation": [
+          {
+            "rules": [
+              {
+                "flag": "valid",
+                "constraint": [
+                  "cooking",
+                  "supplements",
+                  "utensils",
+                  "ingredients",
+                  "books",
+                  "sports"
+                ]
+              },
+              {
+                "flag": "presence",
+                "constraint": "required"
+              }
+            ],
+            "level": "error"
+          }
+        ],
+        "name": "category",
+        "type": "string",
+        "title": "Categoría"
+      },
+      {
+        "options": {
+          "hotspot": true
+        },
+        "validation": [
+          {
+            "rules": [
+              {
+                "flag": "presence",
+                "constraint": "required"
+              }
+            ],
+            "level": "error"
+          }
+        ],
+        "fields": [
+          {
+            "name": "alt",
+            "type": "string",
+            "title": "Texto alternativo"
+          }
+        ],
+        "name": "image",
+        "type": "image",
+        "title": "Imagen de la Lista"
+      },
+      {
+        "validation": [
+          {
+            "rules": [
+              {
+                "flag": "presence",
+                "constraint": "required"
+              },
+              {
+                "flag": "uri",
+                "constraint": {
+                  "options": {
+                    "scheme": [
+                      "/^http$/",
+                      "/^https$/"
+                    ],
+                    "allowRelative": false,
+                    "relativeOnly": false,
+                    "allowCredentials": false
+                  }
+                }
+              }
+            ],
+            "level": "error"
+          }
+        ],
+        "name": "url",
+        "type": "url",
+        "title": "URL de Amazon"
+      },
+      {
+        "initialValue": 0,
+        "readOnly": true,
+        "name": "clickCount",
+        "type": "number",
+        "title": "Número de clicks"
+      },
+      {
+        "name": "createdAt",
+        "type": "datetime",
+        "title": "Fecha de Creación"
+      }
+    ],
+    "name": "amazonList",
+    "type": "document",
+    "title": "Lista Amazon"
+  },
+  {
+    "fields": [
+      {
+        "validation": [
+          {
+            "rules": [
+              {
+                "flag": "presence",
+                "constraint": "required"
+              }
+            ],
+            "level": "error"
+          }
+        ],
+        "description": "Código único para la descarga del producto",
+        "name": "ketoCode",
+        "type": "string",
+        "title": "Código Keto"
+      },
+      {
+        "description": "ID de la sesión de Stripe",
+        "name": "stripeSessionId",
+        "type": "string",
+        "title": "Stripe Session ID"
+      },
+      {
+        "description": "ID del payment intent de Stripe",
+        "name": "stripePaymentIntentId",
+        "type": "string",
+        "title": "Stripe Payment Intent ID"
+      },
+      {
+        "validation": [
+          {
+            "rules": [
+              {
+                "flag": "min",
+                "constraint": 0
+              }
+            ],
+            "level": "error"
+          }
+        ],
+        "name": "amount",
+        "type": "number",
+        "title": "Monto Total (€)"
+      },
+      {
+        "validation": [
+          {
+            "rules": [
+              {
+                "flag": "min",
+                "constraint": 0
+              }
+            ],
+            "level": "error"
+          }
+        ],
+        "name": "stripeCommission",
+        "type": "number",
+        "title": "Comisión Stripe (€)"
+      },
+      {
+        "validation": [
+          {
+            "rules": [
+              {
+                "flag": "min",
+                "constraint": 0
+              }
+            ],
+            "level": "error"
+          }
+        ],
+        "name": "iva",
+        "type": "number",
+        "title": "IVA (€)"
+      },
+      {
+        "validation": [
+          {
+            "rules": [
+              {
+                "flag": "min",
+                "constraint": 0
+              }
+            ],
+            "level": "error"
+          }
+        ],
+        "name": "irpf",
+        "type": "number",
+        "title": "IRPF (€)"
+      },
+      {
+        "validation": [
+          {
+            "rules": [
+              {
+                "flag": "min",
+                "constraint": 0
+              }
+            ],
+            "level": "error"
+          }
+        ],
+        "description": "Monto después de comisiones e impuestos",
+        "name": "netAmount",
+        "type": "number",
+        "title": "Monto Neto (€)"
+      },
+      {
+        "name": "customerEmail",
+        "type": "string",
+        "title": "Email del Cliente"
+      },
+      {
+        "name": "customerName",
+        "type": "string",
+        "title": "Nombre del Cliente"
+      },
+      {
+        "name": "customerPhone",
+        "type": "string",
+        "title": "Teléfono del Cliente"
+      },
+      {
+        "validation": [
+          {
+            "rules": [
+              {
+                "flag": "presence",
+                "constraint": "required"
+              }
+            ],
+            "level": "error"
+          }
+        ],
+        "to": [
+          {
+            "type": "product"
+          }
+        ],
+        "name": "productId",
+        "type": "reference",
+        "title": "Producto"
+      },
+      {
+        "options": {
+          "list": [
+            {
+              "title": "Tarjeta de Crédito",
+              "value": "card"
+            },
+            {
+              "title": "Bizum",
+              "value": "bizum"
+            },
+            {
+              "title": "PayPal",
+              "value": "paypal"
+            },
+            {
+              "title": "Transferencia",
+              "value": "transfer"
+            },
+            {
+              "title": "Otro",
+              "value": "other"
+            }
+          ]
+        },
+        "name": "paymentMethod",
+        "type": "string",
+        "title": "Método de Pago"
+      },
+      {
+        "name": "country",
+        "type": "string",
+        "title": "País"
+      },
+      {
+        "name": "city",
+        "type": "string",
+        "title": "Ciudad"
+      },
+      {
+        "options": {
+          "list": [
+            {
+              "title": "✅ Exitoso",
+              "value": "success"
+            },
+            {
+              "title": "⏳ Pendiente",
+              "value": "pending"
+            },
+            {
+              "title": "❌ Fallido",
+              "value": "failed"
+            },
+            {
+              "title": "🔄 Devuelto",
+              "value": "refunded"
+            },
+            {
+              "title": "⚠️ Cancelado",
+              "value": "canceled"
+            }
+          ]
+        },
+        "initialValue": "pending",
+        "name": "status",
+        "type": "string",
+        "title": "Estado"
+      },
+      {
+        "initialValue": 0,
+        "validation": [
+          {
+            "rules": [
+              {
+                "flag": "min",
+                "constraint": 0
+              }
+            ],
+            "level": "error"
+          }
+        ],
+        "name": "downloadCount",
+        "type": "number",
+        "title": "Número de Descargas"
+      },
+      {
+        "initialValue": 2,
+        "validation": [
+          {
+            "rules": [
+              {
+                "flag": "min",
+                "constraint": 1
+              },
+              {
+                "flag": "max",
+                "constraint": 10
+              }
+            ],
+            "level": "error"
+          }
+        ],
+        "name": "maxDownloads",
+        "type": "number",
+        "title": "Máximo de Descargas Permitidas"
+      },
+      {
+        "readOnly": true,
+        "name": "lastDownloadAt",
+        "type": "datetime",
+        "title": "Última Descarga"
+      },
+      {
+        "rows": 3,
+        "description": "Notas para uso interno",
+        "name": "notes",
+        "type": "text",
+        "title": "Notas Internas"
+      },
+      {
+        "name": "createdAt",
+        "type": "datetime",
+        "title": "Fecha de Transacción"
+      },
+      {
+        "name": "updatedAt",
+        "type": "datetime",
+        "title": "Última Actualización"
+      }
+    ],
+    "name": "transaction",
+    "type": "document",
+    "title": "Transacción"
+  },
+  {
+    "fields": [
+      {
+        "options": {
+          "hotspot": true
+        },
+        "fields": [
+          {
+            "name": "alt",
+            "type": "string",
+            "title": "Texto alternativo"
+          }
+        ],
+        "name": "logo",
+        "type": "image"
+      },
+      {
+        "name": "title",
+        "type": "string",
+        "title": "Título"
+      },
+      {
+        "name": "subtitle",
+        "type": "string",
+        "title": "Subtítulo"
+      },
+      {
+        "rows": 3,
+        "name": "description",
+        "type": "text",
+        "title": "Descripción"
+      },
+      {
+        "fields": [
+          {
+            "name": "primary",
+            "type": "string",
+            "title": "Color Primario"
+          },
+          {
+            "name": "secondary",
+            "type": "string",
+            "title": "Color Secundario"
+          },
+          {
+            "name": "accent",
+            "type": "string",
+            "title": "Color de Acento"
+          }
+        ],
+        "name": "colors",
+        "type": "object",
+        "title": "Colores"
+      }
+    ],
+    "name": "webElements",
+    "type": "document",
+    "title": "Elementos de la Web"
+  }
+]

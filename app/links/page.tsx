@@ -65,30 +65,33 @@ export default function LinksPage() {
   return (
     <div className="h-screen bg-gradient-to-br from-blue-600 via-purple-600 to-blue-800 text-white font-['Inter'] overflow-hidden">
       {/* Header - 18% on mobile */}
-      <div className="h-[18vh] px-4 py-3 flex items-center justify-center border-b border-white/10">
-        <div className="text-center w-full max-w-sm">
-          <div className="flex items-center justify-center gap-3 mb-2">
+      <div className="h-[18vh] px-4 py-3 flex items-center border-b border-white/10">
+        <div className="flex items-center w-full gap-4">
+          {/* Logo - 30% */}
+          <div className="w-[30%] flex-shrink-0">
             {webElements?.logo && (
               <img 
                 src={webElements.logo} 
                 alt="Logo" 
-                className="h-10 w-10 sm:h-12 sm:w-12 object-contain rounded-lg bg-white/10 p-1"
+                className="w-full aspect-square object-contain rounded-xl bg-white/10 p-2"
               />
             )}
-            <div className="flex-1 min-w-0">
-              <h1 className="text-xl sm:text-2xl font-bold text-white mb-1 truncate">
-                {webElements?.title || 'Planeta Keto'}
-              </h1>
-              <p className="text-sm sm:text-base text-white/80 truncate">
-                {webElements?.subtitle || '¡Recetas Keto para todos!'}
-              </p>
-            </div>
           </div>
-          {webElements?.description && (
-            <p className="text-white/70 text-xs sm:text-sm line-clamp-2">
-              {webElements.description}
+          
+          {/* Text Content - 70% */}
+          <div className="w-[70%] min-w-0">
+            <h1 className="text-lg sm:text-xl font-bold text-white mb-1 line-clamp-2 leading-tight">
+              {webElements?.title || 'Planeta Keto'}
+            </h1>
+            <p className="text-sm text-white/80 mb-1 line-clamp-1">
+              {webElements?.subtitle || '¡Recetas Keto para todos!'}
             </p>
-          )}
+            {webElements?.description && (
+              <p className="text-white/70 text-xs line-clamp-2 leading-tight">
+                {webElements.description}
+              </p>
+            )}
+          </div>
         </div>
       </div>
 
@@ -145,13 +148,25 @@ export default function LinksPage() {
                     <div className="flex items-end justify-between">
                       <div className="text-left">
                         {product.originalPrice && product.originalPrice > product.price && (
-                          <span className="text-white/50 line-through text-xs block">
-                            €{product.originalPrice}
+                          <>
+                            <span className="text-white/50 line-through text-xs block">
+                              €{product.originalPrice}
+                            </span>
+                            <div className="flex items-center gap-2">
+                              <span className="text-white font-bold text-sm sm:text-base">
+                                €{product.price}
+                              </span>
+                              <span className="text-green-400 text-xs font-medium">
+                                ({Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)}% off)
+                              </span>
+                            </div>
+                          </>
+                        )}
+                        {(!product.originalPrice || product.originalPrice <= product.price) && (
+                          <span className="text-white font-bold text-sm sm:text-base">
+                            €{product.price}
                           </span>
                         )}
-                        <span className="text-white font-bold text-sm sm:text-base">
-                          €{product.price}
-                        </span>
                       </div>
                       <span className="px-2 py-1 rounded-full bg-white/20 text-white/80 text-xs">
                         {product.category}
