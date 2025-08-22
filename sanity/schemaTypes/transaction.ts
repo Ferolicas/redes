@@ -59,7 +59,6 @@ export const transaction = defineType({
       name: 'customerEmail',
       title: 'Email del Cliente',
       type: 'string',
-      validation: (Rule) => Rule.email(),
     }),
     defineField({
       name: 'customerName',

@@ -24,6 +24,11 @@ export default defineConfig({
           .title('Contenido')
           .items([
             S.listItem()
+              .title('Elementos Web')
+              .icon(() => '🎨')
+              .child(S.documentTypeList('webElements').title('Elementos Web')),
+            S.divider(),
+            S.listItem()
               .title('Productos')
               .icon(() => '🛍️')
               .child(S.documentTypeList('product').title('Productos')),
