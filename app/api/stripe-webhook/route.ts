@@ -22,9 +22,9 @@ export async function POST(request: Request) {
     const paymentIntent = event.data.object
 
     try {
-      // Obtener Payment Intent con información expandida para acceder a los charges
+      // Obtener Payment Intent con información expandida para acceder a los charges y payment method
       const fullPaymentIntent = await stripe.paymentIntents.retrieve(paymentIntent.id, {
-        expand: ['charges.data.payment_method_details']
+        expand: ['charges.data.payment_method_details', 'payment_method']
       })
       // Obtener detalles del producto
       const product = await sanityClient.fetch(
@@ -56,6 +56,7 @@ export async function POST(request: Request) {
       let city = 'N/A'
       let paymentMethodType = 'card'
 
+      // Intentar obtener datos del charge primero
       if ((fullPaymentIntent as any).charges?.data?.length > 0) {
         const charge = (fullPaymentIntent as any).charges.data[0]
         customerEmail = charge.billing_details?.email || fullPaymentIntent.receipt_email || 'N/A'
@@ -68,11 +69,32 @@ export async function POST(request: Request) {
         }
       }
 
+      // Si no tenemos datos del cliente, intentar obtenerlos del payment method
+      if ((customerEmail === 'N/A' || customerName === 'N/A' || city === 'N/A') && (fullPaymentIntent as any).payment_method) {
+        const paymentMethod = (fullPaymentIntent as any).payment_method
+        
+        if (paymentMethod.billing_details) {
+          if (customerEmail === 'N/A' && paymentMethod.billing_details.email) {
+            customerEmail = paymentMethod.billing_details.email
+          }
+          if (customerName === 'N/A' && paymentMethod.billing_details.name) {
+            customerName = paymentMethod.billing_details.name
+          }
+          if (city === 'N/A' && paymentMethod.billing_details.address?.city) {
+            city = paymentMethod.billing_details.address.city
+          }
+        }
+        
+        if (paymentMethodType === 'card' && paymentMethod.type) {
+          paymentMethodType = paymentMethod.type
+        }
+      }
+
       // Crear transacción en Sanity
       const transaction = await sanityClient.create({
         _type: 'transaction',
         ketoCode,
-        stripePaymentIntentId: fullPaymentIntent.id,
+        stripeSessionId: fullPaymentIntent.id,
         amount,
         ...taxes,
         customerEmail,

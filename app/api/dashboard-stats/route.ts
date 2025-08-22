@@ -41,23 +41,45 @@ export async function GET() {
     // Obtener total de productos
     const totalProducts = await sanityClient.fetch(`count(*[_type == "product"])`)
 
-    // Obtener ventas exitosas de productos del día
-    const dailyProductSales = await sanityClient.fetch(`
-      count(*[_type == "transaction" && status == "success" && createdAt >= $todayStart])
+    // Obtener ventas exitosas de productos del día (en euros)
+    const dailyProductSalesData = await sanityClient.fetch(`
+      *[_type == "transaction" && status == "success" && createdAt >= $todayStart] {
+        amount,
+        netAmount
+      }
     `, { todayStart: todayStart.toISOString() })
+    const dailyProductSales = dailyProductSalesData.reduce((sum: number, t: any) => sum + (t.netAmount || t.amount || 0), 0)
 
-    // Obtener ventas exitosas totales de productos
-    const totalProductSales = await sanityClient.fetch(`
-      count(*[_type == "transaction" && status == "success"])
+    // Obtener ventas exitosas totales de productos (en euros)
+    const totalProductSalesData = await sanityClient.fetch(`
+      *[_type == "transaction" && status == "success"] {
+        amount,
+        netAmount
+      }
     `)
+    const totalProductSales = totalProductSalesData.reduce((sum: number, t: any) => sum + (t.netAmount || t.amount || 0), 0)
 
-    // Obtener pedidos del día (todos los estados)
-    const dailyOrders = await sanityClient.fetch(`
-      count(*[_type == "transaction" && createdAt >= $todayStart])
+    // Obtener pedidos del día (todos los estados) - valor en euros
+    const dailyOrdersData = await sanityClient.fetch(`
+      *[_type == "transaction" && createdAt >= $todayStart] {
+        amount,
+        netAmount,
+        status
+      }
     `, { todayStart: todayStart.toISOString() })
+    const dailyOrdersAmount = dailyOrdersData.reduce((sum: number, t: any) => sum + (t.netAmount || t.amount || 0), 0)
+    const dailyOrdersCount = dailyOrdersData.length
 
-    // Obtener pedidos totales (todos los estados)
-    const totalOrders = await sanityClient.fetch(`count(*[_type == "transaction"])`)
+    // Obtener pedidos totales (todos los estados) - valor en euros
+    const totalOrdersData = await sanityClient.fetch(`
+      *[_type == "transaction"] {
+        amount,
+        netAmount,
+        status
+      }
+    `)
+    const totalOrdersAmount = totalOrdersData.reduce((sum: number, t: any) => sum + (t.netAmount || t.amount || 0), 0)
+    const totalOrdersCount = totalOrdersData.length
 
     // Cálculos
     const calculateStats = (transactions: any[]) => ({
@@ -88,12 +110,14 @@ export async function GET() {
       failedPayments,
       products: {
         total: totalProducts,
-        dailySales: dailyProductSales,
-        totalSales: totalProductSales
+        dailySales: Number(dailyProductSales.toFixed(2)),
+        totalSales: Number(totalProductSales.toFixed(2))
       },
       orders: {
-        daily: dailyOrders,
-        total: totalOrders
+        daily: Number(dailyOrdersAmount.toFixed(2)),
+        total: Number(totalOrdersAmount.toFixed(2)),
+        dailyCount: dailyOrdersCount,
+        totalCount: totalOrdersCount
       }
     }
 

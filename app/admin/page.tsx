@@ -173,7 +173,7 @@ export default function AdminPage() {
     totalIVA: 0,
     totalIRPF: 0,
     products: { total: 0, dailySales: 0, totalSales: 0 },
-    orders: { daily: 0, total: 0 }
+    orders: { daily: 0, total: 0, dailyCount: 0, totalCount: 0 }
   }
 
   const getCurrentValue = () => {
@@ -192,9 +192,9 @@ export default function AdminPage() {
         }
       case 'orders':
         return {
-          title: `${stats?.orders?.daily || 0} pedidos hoy`,
+          title: `${stats?.orders?.dailyCount || 0} pedidos hoy`,
           amount: stats?.orders?.total || 0,
-          count: 0
+          count: stats?.orders?.totalCount || 0
         }
       default:
         return { title: 'Ventas Totales', amount: 0, count: 0 }
