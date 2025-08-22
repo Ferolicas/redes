@@ -49,6 +49,13 @@ export const discountCodes = defineType({
       type: 'datetime'
     }),
     defineField({
+      name: 'stripeCouponId',
+      title: 'ID del Cupón en Stripe',
+      type: 'string',
+      description: 'ID del cupón correspondiente en Stripe',
+      readOnly: true
+    }),
+    defineField({
       name: 'clienteAsignado',
       title: 'Cliente Asignado',
       type: 'reference',

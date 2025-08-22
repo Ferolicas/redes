@@ -151,7 +151,7 @@ export const sendPurchaseEmailWithNewsletter = async (
           
           <p style="text-align: center; color: #666; font-size: 14px;">
             ¿Necesitas ayuda? Escríbenos a <a href="mailto:info@planetaketo.es" style="color: #667eea;">info@planetaketo.es</a><br>
-            <a href="https://planetaketo.es" style="color: #667eea; text-decoration: none;">🌐 planetaketo.es</a>
+            <a href="https://store.planetaketo.es" style="color: #667eea; text-decoration: none;">🌐 store.planetaketo.es</a>
           </p>
         </div>
       </div>
@@ -210,12 +210,12 @@ export const sendNewProductNewsletter = async (
               </span>
             </div>
             <p style="text-align: center; color: #666; margin: 0; font-size: 14px;">
-              <strong>Válido para 1 uso únicamente</strong> • Aplica automáticamente al final de la compra
+              <strong>Válido para 1 uso únicamente</strong> • <strong>Aplica en este o cualquier producto de la tienda</strong>
             </p>
           </div>
           
           <div style="text-align: center; margin: 30px 0;">
-            <a href="https://planetaketo.es/?product=${productId}" 
+            <a href="https://store.planetaketo.es/?product=${productId}" 
                style="background: #667eea; color: white; padding: 15px 30px; 
                       text-decoration: none; border-radius: 8px; display: inline-block;
                       font-weight: bold; font-size: 16px; box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);">
@@ -227,6 +227,7 @@ export const sendNewProductNewsletter = async (
             <h4 style="margin: 0 0 10px 0; color: #2e7d32;">⚡ Oferta por tiempo limitado:</h4>
             <ul style="margin: 0; padding-left: 20px; color: #333;">
               <li>20% de descuento exclusivo para suscriptores</li>
+              <li><strong>Código válido para cualquier producto de la tienda</strong></li>
               <li>Descarga inmediata después de la compra</li>
               <li>Soporte completo incluido</li>
               <li>Garantía de satisfacción</li>
@@ -237,7 +238,7 @@ export const sendNewProductNewsletter = async (
           
           <p style="text-align: center; color: #666; font-size: 14px;">
             ¿Necesitas ayuda? Escríbenos a <a href="mailto:info@planetaketo.es" style="color: #667eea;">info@planetaketo.es</a><br>
-            <a href="https://planetaketo.es" style="color: #667eea; text-decoration: none;">🌐 planetaketo.es</a>
+            <a href="https://store.planetaketo.es" style="color: #667eea; text-decoration: none;">🌐 store.planetaketo.es</a>
           </p>
           
           <div style="text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #ddd;">

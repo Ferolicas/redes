@@ -13,7 +13,7 @@ interface PurchaseModalProps {
   onClose: () => void
 }
 
-function CheckoutForm({ product, onClose }: { product: Product; onClose: () => void }) {
+function CheckoutForm({ product, onClose, finalPrice }: { product: Product; onClose: () => void; finalPrice: number }) {
   const stripe = useStripe()
   const elements = useElements()
   const [loading, setLoading] = useState(false)
@@ -69,7 +69,7 @@ function CheckoutForm({ product, onClose }: { product: Product; onClose: () => v
                  font-semibold text-lg transition-all hover:shadow-lg hover:scale-105 
                  disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
       >
-        {loading ? 'Procesando...' : `Pagar €${product.price}`}
+        {loading ? 'Procesando...' : `Pagar €${finalPrice.toFixed(2)}`}
       </button>
     </form>
   )
@@ -78,40 +78,66 @@ function CheckoutForm({ product, onClose }: { product: Product; onClose: () => v
 export default function PurchaseModal({ product, onClose }: PurchaseModalProps) {
   const [clientSecret, setClientSecret] = useState<string | null>(null)
   const [loadingIntent, setLoadingIntent] = useState(true)
+  const [discountCode, setDiscountCode] = useState('')
+  const [discountApplied, setDiscountApplied] = useState(false)
+  const [finalPrice, setFinalPrice] = useState(product.price)
+  const [discountAmount, setDiscountAmount] = useState(0)
+  const [discountError, setDiscountError] = useState('')
 
-  useEffect(() => {
-    const createPaymentIntent = async () => {
-      try {
-        const response = await fetch('/api/create-checkout', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            productId: product._id,
-          }),
-        })
+  const createPaymentIntent = async (discountCodeToApply = '') => {
+    setLoadingIntent(true)
+    try {
+      const response = await fetch('/api/create-checkout', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          productId: product._id,
+          discountCode: discountCodeToApply,
+        }),
+      })
 
-        const data = await response.json()
-        if (data.error) {
-          console.error('Error:', data.error)
-          alert('Error al crear el pago. Inténtalo de nuevo.')
-          onClose()
+      const data = await response.json()
+      if (data.error) {
+        if (data.error === 'Invalid discount code') {
+          setDiscountError('Código de descuento inválido')
           return
         }
-
-        setClientSecret(data.clientSecret)
-      } catch (error) {
-        console.error('Error:', error)
+        console.error('Error:', data.error)
         alert('Error al crear el pago. Inténtalo de nuevo.')
         onClose()
-      } finally {
-        setLoadingIntent(false)
+        return
       }
-    }
 
+      setClientSecret(data.clientSecret)
+      setFinalPrice(data.amount)
+      setDiscountAmount(data.discount || 0)
+      if (discountCodeToApply && data.discount > 0) {
+        setDiscountApplied(true)
+        setDiscountError('')
+      }
+    } catch (error) {
+      console.error('Error:', error)
+      alert('Error al crear el pago. Inténtalo de nuevo.')
+      onClose()
+    } finally {
+      setLoadingIntent(false)
+    }
+  }
+
+  useEffect(() => {
     createPaymentIntent()
   }, [product._id, onClose])
+
+  const handleApplyDiscount = () => {
+    if (!discountCode.trim()) {
+      setDiscountError('Ingresa un código de descuento')
+      return
+    }
+    setDiscountError('')
+    createPaymentIntent(discountCode)
+  }
 
   const discountPercentage = product.originalPrice && product.originalPrice > product.price 
     ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
@@ -142,20 +168,19 @@ export default function PurchaseModal({ product, onClose }: PurchaseModalProps) 
                 {product.title}
               </h2>
               <div className="flex items-center gap-2 flex-wrap">
-                {product.originalPrice && product.originalPrice > product.price && (
+                {discountApplied ? (
                   <>
                     <span className="text-white/60 line-through text-sm">
-                      €{product.originalPrice}
-                    </span>
-                    <span className="text-white font-bold text-lg">
                       €{product.price}
                     </span>
+                    <span className="text-white font-bold text-lg">
+                      €{finalPrice.toFixed(2)}
+                    </span>
                     <span className="text-green-400 text-xs font-medium bg-green-400/20 px-2 py-1 rounded">
-                      {discountPercentage}% off
+                      20% off
                     </span>
                   </>
-                )}
-                {(!product.originalPrice || product.originalPrice <= product.price) && (
+                ) : (
                   <span className="text-white font-bold text-lg">
                     €{product.price}
                   </span>
@@ -192,6 +217,35 @@ export default function PurchaseModal({ product, onClose }: PurchaseModalProps) 
             )}
           </div>
 
+          {/* Discount Code Section */}
+          {!discountApplied && (
+            <div className="p-4 border-b border-white/10">
+              <h3 className="text-sm font-semibold text-white/90 mb-3">¿Tienes un código de descuento?</h3>
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={discountCode}
+                  onChange={(e) => setDiscountCode(e.target.value.toUpperCase())}
+                  placeholder="Ingresa tu código"
+                  className="flex-1 bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white text-sm 
+                           placeholder:text-white/50 focus:outline-none focus:border-blue-400"
+                />
+                <button
+                  type="button"
+                  onClick={handleApplyDiscount}
+                  disabled={loadingIntent || !discountCode.trim()}
+                  className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium
+                           disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                >
+                  Aplicar
+                </button>
+              </div>
+              {discountError && (
+                <p className="text-red-400 text-xs mt-2">{discountError}</p>
+              )}
+            </div>
+          )}
+
           {/* Payment Section */}
           <div className="p-4">
             <h3 className="text-sm font-semibold text-white/90 mb-4 text-center">Finalizar Compra</h3>
@@ -220,7 +274,7 @@ export default function PurchaseModal({ product, onClose }: PurchaseModalProps) 
                   },
                 }}
               >
-                <CheckoutForm product={product} onClose={onClose} />
+                <CheckoutForm product={product} onClose={onClose} finalPrice={finalPrice} />
               </Elements>
             ) : (
               <div className="text-center text-red-400 py-8">

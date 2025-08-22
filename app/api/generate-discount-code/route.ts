@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { sanityClient } from '@/lib/sanity'
+import { createStripeCoupon } from '@/lib/stripe'
 
 export async function POST(request: Request) {
   try {
@@ -31,7 +32,16 @@ export async function POST(request: Request) {
       }
     }
 
-    // Crear el código de descuento
+    // Crear el cupón en Stripe
+    let stripeCoupon = null
+    try {
+      stripeCoupon = await createStripeCoupon(codigo, 20)
+    } catch (stripeError) {
+      console.error('Error creating Stripe coupon:', stripeError)
+      // Continue even if Stripe fails, but log the error
+    }
+
+    // Crear el código de descuento en Sanity
     const discountCode = await sanityClient.create({
       _type: 'discountCodes',
       codigo,
@@ -40,6 +50,7 @@ export async function POST(request: Request) {
       usoUnico: true,
       usado: false,
       fechaCreacion: new Date().toISOString(),
+      stripeCouponId: stripeCoupon?.id || null,
       clienteAsignado: clienteId ? {
         _ref: clienteId,
         _type: 'reference'
@@ -49,7 +60,8 @@ export async function POST(request: Request) {
     return NextResponse.json({ 
       success: true, 
       codigo: discountCode.codigo,
-      discountCode
+      discountCode,
+      stripeCoupon: stripeCoupon ? { id: stripeCoupon.id } : null
     })
   } catch (error) {
     console.error('Error generating discount code:', error)

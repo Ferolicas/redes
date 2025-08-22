@@ -28,3 +28,29 @@ export const generateKetoCode = (status: 'success' | 'pending' | 'failed', numbe
   
   return `${prefixes[status]}-${number.toString().padStart(4, '0')}`
 }
+
+export const createStripeCoupon = async (code: string, percentOff: number = 20) => {
+  try {
+    const coupon = await stripe.coupons.create({
+      id: code,
+      percent_off: percentOff,
+      duration: 'once',
+      max_redemptions: 1,
+      currency: 'eur'
+    })
+    return coupon
+  } catch (error) {
+    console.error('Error creating Stripe coupon:', error)
+    throw error
+  }
+}
+
+export const validateCoupon = async (code: string) => {
+  try {
+    const coupon = await stripe.coupons.retrieve(code)
+    return coupon
+  } catch (error) {
+    console.error('Error validating coupon:', error)
+    return null
+  }
+}
