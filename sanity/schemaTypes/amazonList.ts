@@ -22,19 +22,20 @@ export const amazonList = defineType({
       validation: (Rule) => Rule.required(),
     }),
     defineField({
-      name: 'description',
-      title: 'Descripción',
-      type: 'text',
-      rows: 3,
-      description: 'Breve descripción de qué contiene esta lista',
-    }),
-    defineField({
-      name: 'url',
-      title: 'URL de Amazon',
-      type: 'url',
-      validation: (Rule) => Rule.required().uri({
-        scheme: ['http', 'https'],
-      }),
+      name: 'category',
+      title: 'Categoría',
+      type: 'string',
+      options: {
+        list: [
+          { title: 'Cocina Keto', value: 'cooking' },
+          { title: 'Suplementos', value: 'supplements' },
+          { title: 'Utensilios', value: 'utensils' },
+          { title: 'Ingredientes', value: 'ingredients' },
+          { title: 'Libros', value: 'books' },
+          { title: 'Deportes', value: 'sports' },
+        ],
+      },
+      validation: (Rule) => Rule.required(),
     }),
     defineField({
       name: 'image',
@@ -50,47 +51,15 @@ export const amazonList = defineType({
           title: 'Texto alternativo',
         },
       ],
+      validation: (Rule) => Rule.required(),
     }),
     defineField({
-      name: 'category',
-      title: 'Categoría',
-      type: 'string',
-      options: {
-        list: [
-          { title: 'Cocina Keto', value: 'cooking' },
-          { title: 'Suplementos', value: 'supplements' },
-          { title: 'Utensilios', value: 'utensils' },
-          { title: 'Ingredientes', value: 'ingredients' },
-          { title: 'Libros', value: 'books' },
-          { title: 'Deportes', value: 'sports' },
-        ],
-      },
-    }),
-    defineField({
-      name: 'tags',
-      title: 'Etiquetas',
-      type: 'array',
-      of: [{ type: 'string' }],
-      description: 'Etiquetas para facilitar la búsqueda',
-    }),
-    defineField({
-      name: 'featured',
-      title: 'Lista Destacada',
-      type: 'boolean',
-      initialValue: false,
-    }),
-    defineField({
-      name: 'active',
-      title: 'Activa',
-      type: 'boolean',
-      initialValue: true,
-    }),
-    defineField({
-      name: 'order',
-      title: 'Orden de visualización',
-      type: 'number',
-      initialValue: 0,
-      description: 'Número para ordenar las listas (menor número = más arriba)',
+      name: 'url',
+      title: 'URL de Amazon',
+      type: 'url',
+      validation: (Rule) => Rule.required().uri({
+        scheme: ['http', 'https'],
+      }),
     }),
     defineField({
       name: 'clickCount',
@@ -111,28 +80,25 @@ export const amazonList = defineType({
       title: 'title',
       media: 'image',
       category: 'category',
-      active: 'active',
+      clickCount: 'clickCount',
     },
     prepare(selection) {
-      const { title, media, category, active } = selection
+      const { title, media, category, clickCount } = selection
       return {
         title,
-        subtitle: `${category || 'Sin categoría'} ${active ? '✅' : '❌'}`,
+        subtitle: `${category || 'Sin categoría'} • ${clickCount} clicks`,
         media,
       }
     },
   },
   orderings: [
     {
-      title: 'Orden personalizado',
-      name: 'orderAsc',
-      by: [
-        { field: 'order', direction: 'asc' },
-        { field: 'createdAt', direction: 'desc' },
-      ],
+      title: 'Más antiguas primero',
+      name: 'createdAsc',
+      by: [{ field: 'createdAt', direction: 'asc' }],
     },
     {
-      title: 'Más recientes',
+      title: 'Más recientes primero',
       name: 'createdDesc',
       by: [{ field: 'createdAt', direction: 'desc' }],
     },

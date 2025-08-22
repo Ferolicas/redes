@@ -10,9 +10,7 @@ import {
   ShoppingBag,
   Package,
   ChevronDown,
-  ChevronUp,
-  Search,
-  Menu
+  ChevronUp
 } from 'lucide-react'
 
 export default function AdminPage() {
@@ -22,17 +20,24 @@ export default function AdminPage() {
   const [isExpanded, setIsExpanded] = useState(false)
 
   // --- Nuevos estados para los productos ---
-  const [products, setProducts] = useState([])
+  const [products, setProducts] = useState<any[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState(null)
   
   // --- Estados para ventas exitosas ---
-  const [successfulSales, setSuccessfulSales] = useState([])
+  const [successfulSales, setSuccessfulSales] = useState<any[]>([])
   const [salesLoading, setSalesLoading] = useState(true)
   const [salesError, setSalesError] = useState(null)
   
   // --- Estados para formularios ---
-  const [productForm, setProductForm] = useState({
+  const [productForm, setProductForm] = useState<{
+    title: string;
+    description: string;
+    price: string;
+    stripePriceId: string;
+    category: string;
+    file: File | null;
+  }>({
     title: '',
     description: '',
     price: '',
@@ -41,8 +46,14 @@ export default function AdminPage() {
     file: null
   })
   
-  const [listForm, setListForm] = useState({
+  const [listForm, setListForm] = useState<{
+    title: string;
+    category: string;
+    url: string;
+    image: File | null;
+  }>({
     title: '',
+    category: 'cooking',
     url: '',
     image: null
   })
@@ -53,7 +64,7 @@ export default function AdminPage() {
   const [statsError, setStatsError] = useState(null)
   
   // --- Estados para pedidos ---
-  const [orders, setOrders] = useState([])
+  const [orders, setOrders] = useState<any[]>([])
   const [ordersLoading, setOrdersLoading] = useState(true)
   const [ordersError, setOrdersError] = useState(null)
   const [orderStatusFilter, setOrderStatusFilter] = useState('all')
@@ -70,7 +81,7 @@ export default function AdminPage() {
         }
         const data = await response.json();
         setProducts(data);
-      } catch (err) {
+      } catch (err: any) {
         setError(err.message);
         console.error(err);
       } finally {
@@ -93,7 +104,7 @@ export default function AdminPage() {
         }
         const data = await response.json();
         setSuccessfulSales(data);
-      } catch (err) {
+      } catch (err: any) {
         setSalesError(err.message);
         console.error(err);
       } finally {
@@ -116,7 +127,7 @@ export default function AdminPage() {
         }
         const data = await response.json();
         setDashboardStats(data);
-      } catch (err) {
+      } catch (err: any) {
         setStatsError(err.message);
         console.error(err);
       } finally {
@@ -139,7 +150,7 @@ export default function AdminPage() {
         }
         const data = await response.json();
         setOrders(data);
-      } catch (err) {
+      } catch (err: any) {
         setOrdersError(err.message);
         console.error(err);
       } finally {
@@ -190,15 +201,15 @@ export default function AdminPage() {
 
   const currentData = getCurrentValue()
 
-  const CreateProductModal = ({ onClose }) => {
-    const handleSubmit = async (e) => {
+  const CreateProductModal = ({ onClose }: { onClose: () => void }) => {
+    const handleSubmit = async (e: React.FormEvent) => {
       e.preventDefault()
       // TODO: Implementar creación de producto
       console.log('Producto a crear:', productForm)
       onClose()
     }
 
-    const handleInputChange = (field, value) => {
+    const handleInputChange = (field: string, value: string) => {
       setProductForm(prev => ({ ...prev, [field]: value }))
     }
 
@@ -250,8 +261,8 @@ export default function AdminPage() {
               <div className="space-y-2">
                 <label className="block text-sm font-medium text-slate-300">Archivo PDF del libro</label>
                 <input 
-                  onChange={(e) => {
-                    const file = e.target.files[0]
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                    const file = e.target.files?.[0]
                     if (file) {
                       setProductForm(prev => ({ ...prev, file: file }))
                     }
@@ -286,20 +297,20 @@ export default function AdminPage() {
     )
   }
 
-  const CreateListModal = ({ onClose }) => {
-    const handleSubmit = async (e) => {
+  const CreateListModal = ({ onClose }: { onClose: () => void }) => {
+    const handleSubmit = async (e: React.FormEvent) => {
       e.preventDefault()
       // TODO: Implementar creación de lista
       console.log('Lista a crear:', listForm)
       onClose()
     }
 
-    const handleInputChange = (field, value) => {
+    const handleInputChange = (field: string, value: string) => {
       setListForm(prev => ({ ...prev, [field]: value }))
     }
 
-    const handleImageChange = (e) => {
-      const file = e.target.files[0]
+    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      const file = e.target.files?.[0]
       if (file) {
         setListForm(prev => ({ ...prev, image: file }))
       }
@@ -317,6 +328,18 @@ export default function AdminPage() {
               placeholder="Título de la lista"
               required
             />
+            <select
+              value={listForm.category}
+              onChange={(e) => handleInputChange('category', e.target.value)}
+              className="w-full rounded-2xl border border-slate-600 bg-slate-800 p-4 text-white focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all"
+            >
+              <option value="cooking">Cocina Keto</option>
+              <option value="supplements">Suplementos</option>
+              <option value="utensils">Utensilios</option>
+              <option value="ingredients">Ingredientes</option>
+              <option value="books">Libros</option>
+              <option value="sports">Deportes</option>
+            </select>
             <input 
               value={listForm.url}
               onChange={(e) => handleInputChange('url', e.target.value)}
@@ -358,9 +381,9 @@ export default function AdminPage() {
     )
   }
 
-  const TransactionsList = ({ filter }) => {
+  const TransactionsList = ({ filter }: { filter: string }) => {
     // Formatear fecha y hora
-    const formatDateTime = (dateString) => {
+    const formatDateTime = (dateString: string) => {
       const date = new Date(dateString)
       const today = new Date()
       const yesterday = new Date(today)
@@ -385,8 +408,8 @@ export default function AdminPage() {
     }
 
     // Mapear método de pago a emoji/texto
-    const getPaymentMethodDisplay = (method) => {
-      const methods = {
+    const getPaymentMethodDisplay = (method: string) => {
+      const methods: { [key: string]: string } = {
         'card': '💳 Tarjeta',
         'paypal': '🅿️ PayPal',
         'bancontact': '🏦 Bancontact',
@@ -454,7 +477,7 @@ export default function AdminPage() {
 
   const OrdersList = () => {
     // Formatear fecha y hora
-    const formatDateTime = (dateString) => {
+    const formatDateTime = (dateString: string) => {
       const date = new Date(dateString)
       return date.toLocaleDateString('es-ES', { 
         day: '2-digit', 
@@ -466,8 +489,8 @@ export default function AdminPage() {
     }
 
     // Obtener color del estado
-    const getStatusColor = (status) => {
-      const colors = {
+    const getStatusColor = (status: string) => {
+      const colors: { [key: string]: string } = {
         'success': 'text-green-400',
         'pending': 'text-yellow-400',
         'failed': 'text-red-400',
@@ -477,8 +500,8 @@ export default function AdminPage() {
     }
 
     // Obtener texto del estado
-    const getStatusText = (status) => {
-      const texts = {
+    const getStatusText = (status: string) => {
+      const texts: { [key: string]: string } = {
         'success': 'Exitoso',
         'pending': 'Pendiente',
         'failed': 'Fallido',
@@ -543,27 +566,10 @@ export default function AdminPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-600 via-purple-600 to-blue-800 text-white font-['Inter']">
-      
-      {/* Header estilo Revolut */}
-      <div className="px-6 pb-4 pt-12">
-        <div className="mb-8 flex items-center justify-between">
-          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-white/20 backdrop-blur-md border border-white/30">
-            <div className="h-7 w-7 rounded-full bg-white shadow-sm"></div>
-          </div>
-          <div className="flex items-center gap-4">
-            <button className="flex h-12 w-12 items-center justify-center rounded-full bg-white/20 backdrop-blur-md border border-white/30 hover:bg-white/30 transition-all">
-              <Search size={20} />
-            </button>
-            <button className="flex h-12 w-12 items-center justify-center rounded-full bg-white/20 backdrop-blur-md border border-white/30 hover:bg-white/30 transition-all">
-              <Menu size={20} />
-            </button>
-          </div>
-        </div>
-      </div>
+    <div className="min-h-screen bg-gradient-to-br from-blue-600 via-purple-600 to-blue-800 text-white font-['Inter']">{/* Header eliminado */}
 
       {/* Valor principal */}
-      <div className="mb-8 px-6 text-center">
+      <div className="mb-8 px-6 text-center pt-12">
         <p className="mb-3 text-sm text-white/80 font-medium">Personal • Todas las cuentas</p>
         <h1 className="mb-3 text-7xl font-extralight tracking-tight">€{currentData.amount.toFixed(2)}</h1>
         <p className="text-sm text-white/80">{currentData.count} ventas</p>
@@ -796,6 +802,7 @@ export default function AdminPage() {
           setShowListModal(false)
           setListForm({
             title: '',
+            category: 'cooking',
             url: '',
             image: null
           })

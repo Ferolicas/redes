@@ -29,9 +29,16 @@ export const product = defineType({
     }),
     defineField({
       name: 'price',
-      title: 'Precio (€)',
+      title: 'Precio a Cobrar (€)',
       type: 'number',
       validation: (Rule) => Rule.required().min(0),
+    }),
+    defineField({
+      name: 'originalPrice',
+      title: 'Precio Original (€)',
+      type: 'number',
+      validation: (Rule) => Rule.min(0),
+      description: 'Precio original antes del descuento (opcional)',
     }),
     defineField({
       name: 'stripePriceId',
@@ -53,33 +60,7 @@ export const product = defineType({
           title: 'Texto alternativo',
         },
       ],
-    }),
-    defineField({
-      name: 'gallery',
-      title: 'Galería de Imágenes',
-      type: 'array',
-      of: [
-        {
-          type: 'image',
-          options: {
-            hotspot: true,
-          },
-          fields: [
-            {
-              name: 'alt',
-              type: 'string',
-              title: 'Texto alternativo',
-            },
-          ],
-        },
-      ],
-    }),
-    defineField({
-      name: 'includes',
-      title: 'Qué incluye',
-      type: 'array',
-      of: [{ type: 'string' }],
-      description: 'Lista de elementos que incluye el producto',
+      validation: (Rule) => Rule.required(),
     }),
     defineField({
       name: 'category',
@@ -106,21 +87,10 @@ export const product = defineType({
     }),
     defineField({
       name: 'featured',
-      title: 'Producto Destacado',
+      title: 'Fijar',
       type: 'boolean',
       initialValue: false,
-    }),
-    defineField({
-      name: 'active',
-      title: 'Activo',
-      type: 'boolean',
-      initialValue: true,
-    }),
-    defineField({
-      name: 'order',
-      title: 'Orden de visualización',
-      type: 'number',
-      initialValue: 0,
+      description: 'Mostrar este producto como destacado',
     }),
     defineField({
       name: 'createdAt',
@@ -134,15 +104,48 @@ export const product = defineType({
       title: 'title',
       media: 'image',
       price: 'price',
+      originalPrice: 'originalPrice',
       category: 'category',
+      featured: 'featured',
     },
     prepare(selection) {
-      const { title, media, price, category } = selection
+      const { title, media, price, originalPrice, category, featured } = selection
+      const priceText = originalPrice && originalPrice > price 
+        ? `€${price} (antes €${originalPrice})` 
+        : `€${price}`
       return {
-        title,
-        subtitle: `€${price} - ${category}`,
+        title: `${featured ? '📌 ' : ''}${title}`,
+        subtitle: `${priceText} - ${category}`,
         media,
       }
     },
   },
+  orderings: [
+    {
+      title: 'Más nuevos primero',
+      name: 'createdDesc',
+      by: [
+        { field: 'featured', direction: 'desc' },
+        { field: 'createdAt', direction: 'desc' }
+      ],
+    },
+    {
+      title: 'Más antiguos primero',
+      name: 'createdAsc',
+      by: [
+        { field: 'featured', direction: 'desc' },
+        { field: 'createdAt', direction: 'asc' }
+      ],
+    },
+    {
+      title: 'Precio menor a mayor',
+      name: 'priceAsc',
+      by: [{ field: 'price', direction: 'asc' }],
+    },
+    {
+      title: 'Precio mayor a menor',
+      name: 'priceDesc',
+      by: [{ field: 'price', direction: 'desc' }],
+    },
+  ],
 })
