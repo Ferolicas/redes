@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react' // Modificado
+import AdminLogin from '@/components/AdminLogin'
 import { 
   Plus, 
   TrendingUp, 
@@ -11,7 +12,8 @@ import {
   Package,
   ChevronDown,
   ChevronUp,
-  List
+  List,
+  LogOut
 } from 'lucide-react'
 import { urlFor } from '@/lib/sanity'
 
@@ -418,10 +420,22 @@ const CreateListModal = ({
 }
 
 export default function AdminPage() {
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [showProductModal, setShowProductModal] = useState(false)
   const [showListModal, setShowListModal] = useState(false)
   const [activeView, setActiveView] = useState('dashboard')
   const [isExpanded, setIsExpanded] = useState(false)
+
+  // Verificar autenticación al cargar
+  useEffect(() => {
+    const authStatus = localStorage.getItem('admin_authenticated')
+    setIsAuthenticated(authStatus === 'true')
+  }, [])
+
+  const handleLogout = () => {
+    localStorage.removeItem('admin_authenticated')
+    setIsAuthenticated(false)
+  }
 
   // --- Nuevos estados para los productos ---
   const [products, setProducts] = useState<any[]>([])
@@ -820,11 +834,22 @@ export default function AdminPage() {
     )
   }
 
-  return (
+  const adminContent = (
     <div className="min-h-screen bg-gradient-to-br from-blue-600 via-purple-600 to-blue-800 text-white font-['Inter']">{/* Header eliminado */}
 
+      {/* Header con logout */}
+      <div className="flex justify-end p-4">
+        <button
+          onClick={handleLogout}
+          className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/10 backdrop-blur-md border border-white/20 hover:bg-white/20 transition-all text-white text-sm"
+        >
+          <LogOut size={16} />
+          Cerrar Sesión
+        </button>
+      </div>
+
       {/* Valor principal */}
-      <div className="mb-8 px-6 text-center pt-12">
+      <div className="mb-8 px-6 text-center">
         <p className="mb-3 text-sm text-white/80 font-medium">Personal • Todas las cuentas</p>
         <h1 className="mb-3 text-7xl font-extralight tracking-tight">
           {activeView === 'dashboard' ? `€${currentData.amount.toFixed(2)}` : currentData.amount}
@@ -1152,4 +1177,12 @@ export default function AdminPage() {
       )}
     </div>
   )
+
+  // Si no está autenticado, mostrar el login
+  if (!isAuthenticated) {
+    return <AdminLogin onLogin={() => setIsAuthenticated(true)} />
+  }
+
+  // Si está autenticado, mostrar el admin
+  return adminContent
 }
