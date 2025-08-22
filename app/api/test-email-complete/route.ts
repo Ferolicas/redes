@@ -30,6 +30,7 @@ export async function GET(request: Request) {
         'Ferney',
         'Nueva Guía: Recetas Keto Avanzadas',
         49.99,
+        'test-product-id-123', // ID de producto de prueba
         'https://via.placeholder.com/400x300/667eea/ffffff?text=Recetas+Keto',
         'KETO20-ABC123'
       )

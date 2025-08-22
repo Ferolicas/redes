@@ -13,7 +13,8 @@ import {
   ChevronDown,
   ChevronUp,
   List,
-  LogOut
+  LogOut,
+  Mail
 } from 'lucide-react'
 import { urlFor } from '@/lib/sanity'
 
@@ -419,10 +420,159 @@ const CreateListModal = ({
   )
 }
 
+// Modal para enviar newsletter
+const NewsletterModal = ({ 
+  onClose, 
+  products 
+}: { 
+  onClose: () => void;
+  products: any[];
+}) => {
+  const [selectedProductId, setSelectedProductId] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [success, setSuccess] = useState(false)
+  const [result, setResult] = useState<any>(null)
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!selectedProductId) return
+
+    setLoading(true)
+
+    try {
+      const response = await fetch('/api/send-newsletter', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          productId: selectedProductId
+        }),
+      })
+
+      if (!response.ok) {
+        throw new Error('Error al enviar el newsletter')
+      }
+
+      const data = await response.json()
+      setResult(data)
+      setSuccess(true)
+    } catch (error) {
+      console.error('Error al enviar newsletter:', error)
+      alert('Error al enviar el newsletter. Por favor, inténtalo de nuevo.')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const selectedProduct = products.find(p => p._id === selectedProductId)
+
+  if (success && result) {
+    return (
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+        <div className="m-4 w-full max-w-md animate-in slide-in-from-bottom-4 duration-300 rounded-3xl bg-slate-900 p-8 shadow-2xl border border-slate-700">
+          <h2 className="mb-6 text-xl font-semibold text-white text-center">✅ Newsletter Enviado</h2>
+          
+          <div className="bg-green-500/10 border border-green-500/20 rounded-xl p-4 mb-6">
+            <p className="text-green-400 text-center font-medium">
+              Newsletter enviado exitosamente
+            </p>
+            <div className="mt-4 space-y-2 text-sm text-white/70">
+              <p><strong>Total suscriptores:</strong> {result.totalSubscribers}</p>
+              <p><strong>Enviados exitosamente:</strong> {result.successCount}</p>
+              <p><strong>Errores:</strong> {result.errorCount}</p>
+            </div>
+          </div>
+
+          <button 
+            onClick={onClose}
+            className="w-full rounded-2xl bg-gradient-to-r from-blue-600 to-purple-600 py-3 px-4 font-medium text-white hover:from-blue-700 hover:to-purple-700 transition-all transform hover:scale-105"
+          >
+            Cerrar
+          </button>
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+      <div className="m-4 w-full max-w-md animate-in slide-in-from-bottom-4 duration-300 rounded-3xl bg-slate-900 p-8 shadow-2xl border border-slate-700">
+        <h2 className="mb-6 text-xl font-semibold text-white">📧 Enviar Newsletter</h2>
+        
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-slate-300 mb-3">
+              Selecciona el producto a promocionar:
+            </label>
+            <select
+              value={selectedProductId}
+              onChange={(e) => setSelectedProductId(e.target.value)}
+              className="w-full rounded-2xl border border-slate-600 bg-slate-800 p-4 text-white focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all"
+              required
+            >
+              <option value="">Seleccionar producto...</option>
+              {products.map((product) => (
+                <option key={product._id} value={product._id}>
+                  {product.title} - €{product.price}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {selectedProduct && (
+            <div className="bg-slate-800/50 rounded-xl p-4 border border-slate-600">
+              <div className="flex gap-3">
+                {selectedProduct.image && (
+                  <img 
+                    src={selectedProduct.image} 
+                    alt={selectedProduct.title}
+                    className="w-16 h-16 object-cover rounded-lg"
+                  />
+                )}
+                <div className="flex-1">
+                  <h3 className="font-medium text-white text-sm">{selectedProduct.title}</h3>
+                  <p className="text-slate-400 text-xs mt-1">€{selectedProduct.price}</p>
+                  <p className="text-slate-500 text-xs mt-1">{selectedProduct.category}</p>
+                </div>
+              </div>
+            </div>
+          )}
+
+          <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-xl p-4">
+            <p className="text-yellow-400 text-sm">
+              <strong>⚠️ Importante:</strong> Este newsletter se enviará a todos los suscriptores activos con un código de descuento del 20% personalizado para cada uno.
+            </p>
+          </div>
+
+          <div className="mt-6 flex gap-3">
+            <button 
+              type="button"
+              onClick={onClose}
+              disabled={loading}
+              className="flex-1 rounded-2xl bg-slate-800 py-3 px-4 font-medium text-slate-300 hover:bg-slate-700 transition-colors disabled:opacity-50"
+            >
+              Cancelar
+            </button>
+            <button 
+              type="submit"
+              disabled={loading || !selectedProductId}
+              className="flex-1 rounded-2xl bg-gradient-to-r from-orange-500 to-red-500 py-3 px-4 font-medium text-white hover:from-orange-600 hover:to-red-600 transition-all transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+            >
+              {loading ? 'Enviando...' : 'Enviar Newsletter'}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  )
+}
+
 export default function AdminPage() {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [showProductModal, setShowProductModal] = useState(false)
   const [showListModal, setShowListModal] = useState(false)
+  const [showNewsletterModal, setShowNewsletterModal] = useState(false)
   const [activeView, setActiveView] = useState('dashboard')
   const [isExpanded, setIsExpanded] = useState(false)
 
@@ -607,7 +757,8 @@ export default function AdminPage() {
     totalIVA: 0,
     totalIRPF: 0,
     products: { total: 0, dailySales: 0, totalSales: 0 },
-    orders: { daily: 0, total: 0 }
+    orders: { daily: 0, total: 0 },
+    amazonLists: { total: 0 }
   }
 
   const getCurrentValue = () => {
@@ -865,7 +1016,7 @@ export default function AdminPage() {
 
       {/* Botones de acción principales */}
       <div className="mb-8 px-6">
-        <div className="flex justify-center gap-12">
+        <div className="flex justify-center gap-8">
           <button
             onClick={() => setShowProductModal(true)}
             className="group flex flex-col items-center gap-3"
@@ -884,6 +1035,16 @@ export default function AdminPage() {
               <Plus size={26} />
             </div>
             <span className="text-sm font-medium">Nueva Lista</span>
+          </button>
+
+          <button
+            onClick={() => setShowNewsletterModal(true)}
+            className="group flex flex-col items-center gap-3"
+          >
+            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-r from-orange-500 to-red-500 backdrop-blur-md border border-white/30 shadow-lg hover:from-orange-600 hover:to-red-600 transition-all group-hover:scale-105">
+              <Mail size={26} />
+            </div>
+            <span className="text-sm font-medium">Newsletter</span>
           </button>
         </div>
       </div>
@@ -1179,6 +1340,13 @@ export default function AdminPage() {
               image: null
             })
           }} 
+        />
+      )}
+
+      {showNewsletterModal && (
+        <NewsletterModal 
+          products={products}
+          onClose={() => setShowNewsletterModal(false)} 
         />
       )}
     </div>

@@ -1,15 +1,19 @@
 'use client'
 
-import React from 'react'
+import React, { Suspense } from 'react'
 import { useQuery } from '@tanstack/react-query'
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { ShoppingBag, ExternalLink, Sparkles, ChevronLeft, ChevronRight } from 'lucide-react'
 import ProductCard from '../components/ProductCard'
 import AmazonCard from '../components/AmazonCard'
 import PurchaseModal from '../components/PurchaseModal'
 import { Product, AmazonList } from '../types'
 
-export default function HomePage() {
+function HomePageContent() {
+  const searchParams = useSearchParams()
+  const productId = searchParams.get('product')
+  
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null)
   const [productsOffset, setProductsOffset] = useState(0)
   const [listsOffset, setListsOffset] = useState(0)
@@ -59,6 +63,16 @@ export default function HomePage() {
       })
     }
   }
+
+  // Efecto para abrir modal del producto si se pasa por URL
+  useEffect(() => {
+    if (productId && products.length > 0) {
+      const product = products.find(p => p._id === productId)
+      if (product) {
+        setSelectedProduct(product)
+      }
+    }
+  }, [productId, products])
 
   const visibleProducts = products.slice(productsOffset, productsOffset + 4)
 
@@ -276,5 +290,17 @@ export default function HomePage() {
         />
       )}
     </div>
+  )
+}
+
+export default function HomePage() {
+  return (
+    <Suspense fallback={
+      <div className="h-screen bg-gradient-to-br from-blue-600 via-purple-600 to-blue-800 text-white font-['Inter'] flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white"></div>
+      </div>
+    }>
+      <HomePageContent />
+    </Suspense>
   )
 }

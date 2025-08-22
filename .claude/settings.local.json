@@ -23,7 +23,8 @@
       "Bash(grep:*)",
       "Bash(curl:*)",
       "Bash(npx vercel logs:*)",
-      "Bash(git reset:*)"
+      "Bash(git reset:*)",
+      "Bash(npx vercel:*)"
     ],
     "deny": [],
     "ask": []

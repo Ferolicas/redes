@@ -171,6 +171,7 @@ export const sendNewProductNewsletter = async (
   name: string,
   productTitle: string,
   productPrice: number,
+  productId: string,
   productImage?: string,
   discountCode?: string
 ) => {
@@ -214,7 +215,7 @@ export const sendNewProductNewsletter = async (
           </div>
           
           <div style="text-align: center; margin: 30px 0;">
-            <a href="https://planetaketo.es" 
+            <a href="https://planetaketo.es/?product=${productId}" 
                style="background: #667eea; color: white; padding: 15px 30px; 
                       text-decoration: none; border-radius: 8px; display: inline-block;
                       font-weight: bold; font-size: 16px; box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);">

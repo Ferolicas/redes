@@ -59,6 +59,7 @@ export async function POST(request: Request) {
             subscriber.nombre,
             product.title,
             product.price,
+            product._id, // Pasar el ID del producto
             product.image,
             discountData.codigo
           )
