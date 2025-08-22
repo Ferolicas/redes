@@ -220,24 +220,36 @@ export default function LinksPage() {
                 rel="noopener noreferrer"
                 className="block h-full rounded-xl bg-white/10 backdrop-blur-md border border-white/20 p-3 hover:bg-white/20 transition-all group"
               >
-                <div className="h-full flex flex-col">
-                  {list.image && (
-                    <img 
-                      src={list.image} 
-                      alt={list.title}
-                      className="w-full h-16 sm:h-20 object-cover rounded-lg mb-2 group-hover:scale-105 transition-transform"
-                    />
-                  )}
-                  <h3 className="text-sm sm:text-base font-semibold text-white mb-2 line-clamp-2 leading-tight">
-                    {list.title}
-                  </h3>
-                  <div className="flex items-center justify-between mt-auto">
-                    <span className="px-2 py-1 rounded-full bg-white/20 text-white/80 text-xs">
-                      {list.category}
-                    </span>
-                    <span className="text-white/60 text-xs">
-                      {list.clickCount} clicks
-                    </span>
+                <div className="h-full flex gap-3">
+                  {/* 30% para imagen a la izquierda */}
+                  <div className="w-[30%] flex-shrink-0">
+                    {list.image ? (
+                      <img 
+                        src={list.image} 
+                        alt={list.title}
+                        className="w-full h-full object-cover rounded-lg group-hover:scale-105 transition-transform"
+                        style={{ padding: '3%' }}
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-white/10 rounded-lg flex items-center justify-center">
+                        <ExternalLink size={20} className="text-white/50" />
+                      </div>
+                    )}
+                  </div>
+                  
+                  {/* 70% para contenido a la derecha */}
+                  <div className="w-[70%] flex flex-col justify-between">
+                    <h3 className="text-sm sm:text-base font-semibold text-white mb-2 line-clamp-3 leading-tight">
+                      {list.title}
+                    </h3>
+                    <div className="flex items-center justify-between mt-auto">
+                      <span className="px-2 py-1 rounded-full bg-white/20 text-white/80 text-xs">
+                        {list.category}
+                      </span>
+                      <span className="text-white/60 text-xs">
+                        {list.clickCount || 0} clicks
+                      </span>
+                    </div>
                   </div>
                 </div>
               </a>

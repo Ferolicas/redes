@@ -4,12 +4,13 @@ import { sanityClient } from '@/lib/sanity'
 export async function GET() {
   try {
     const lists = await sanityClient.fetch(`
-      *[_type == "amazonList"] | order(order asc, createdAt desc) {
+      *[_type == "amazonList"] | order(createdAt desc) {
         _id,
         title,
+        category,
         url,
-        image,
-        order,
+        "image": image.asset->url,
+        clickCount,
         createdAt
       }
     `)

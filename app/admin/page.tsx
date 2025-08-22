@@ -915,7 +915,7 @@ export default function AdminPage() {
                       <div className="w-3/12 p-1">
                         {list.image ? (
                           <img 
-                            src={list.image.asset ? urlFor(list.image).url() : list.image} 
+                            src={list.image} 
                             alt={list.title}
                             className="w-full h-full object-cover rounded-xl"
                             style={{ padding: '3%' }}
@@ -962,7 +962,7 @@ export default function AdminPage() {
                       <div className="w-4/5 p-1">
                         {product.image ? (
                           <img 
-                            src={product.image.asset ? urlFor(product.image).url() : product.image} 
+                            src={product.image} 
                             alt={product.title}
                             className="w-full h-full object-cover rounded-xl"
                             style={{ padding: '3%' }}

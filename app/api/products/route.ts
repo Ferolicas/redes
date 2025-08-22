@@ -4,16 +4,17 @@ import { sanityClient } from '@/lib/sanity'
 export async function GET() {
   try {
     const products = await sanityClient.fetch(`
-      *[_type == "product"] | order(createdAt desc) {
+      *[_type == "product"] | order(featured desc, createdAt desc) {
         _id,
         title,
         description,
         price,
+        originalPrice,
         stripePriceId,
-        image,
-        includes,
-        type,
-        fileUrl,
+        category,
+        featured,
+        "image": image.asset->url,
+        "pdfFile": pdfFile.asset->url,
         createdAt
       }
     `)
