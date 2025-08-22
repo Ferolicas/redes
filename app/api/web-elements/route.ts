@@ -1,9 +1,9 @@
 import { NextResponse } from 'next/server'
-import { client } from '@/sanity/lib/client'
+import { sanityClient } from '@/lib/sanity'
 
 export async function GET() {
   try {
-    const webElements = await client.fetch(`
+    const webElements = await sanityClient.fetch(`
       *[_type == "webElements"][0]{
         _id,
         title,

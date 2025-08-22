@@ -3,9 +3,11 @@ export interface Product {
   title: string
   description: string
   price: number
+  originalPrice?: number
   stripePriceId: string
   image: any
   includes: string[]
+  category: string
   type: 'digital' | 'service'
   fileUrl?: string
   createdAt: string
@@ -16,6 +18,8 @@ export interface AmazonList {
   title: string
   url: string
   image: any
+  category: string
+  clickCount: number
   order: number
   createdAt: string
 }
