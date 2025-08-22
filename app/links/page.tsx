@@ -142,7 +142,7 @@ export default function LinksPage() {
                     <h3 className="text-sm sm:text-base font-semibold text-white mb-1 line-clamp-2 leading-tight">
                       {product.title}
                     </h3>
-                    <div className="text-white/70 text-xs mb-2 flex-1 leading-tight max-h-40 overflow-y-auto scrollbar-thin scrollbar-thumb-white/20 scrollbar-track-transparent">
+                    <div className="text-white/70 text-xs mb-2 flex-1 leading-tight max-h-20 overflow-y-auto scrollbar-thin scrollbar-thumb-white/20 scrollbar-track-transparent">
                       <p className="whitespace-pre-wrap">
                         {product.description}
                       </p>
@@ -151,21 +151,21 @@ export default function LinksPage() {
                       <div className="text-left">
                         {product.originalPrice && product.originalPrice > product.price && (
                           <>
-                            <span className="text-white/50 line-through text-sm block">
+                            <span className="text-white/50 line-through text-xs block">
                               €{product.originalPrice}
                             </span>
                             <div className="flex items-center gap-2">
-                              <span className="text-white font-bold text-base sm:text-lg">
+                              <span className="text-white font-bold text-sm sm:text-base">
                                 €{product.price}
                               </span>
-                              <span className="text-green-400 text-sm font-medium">
+                              <span className="text-green-400 text-xs font-medium">
                                 ({Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)}% off)
                               </span>
                             </div>
                           </>
                         )}
                         {(!product.originalPrice || product.originalPrice <= product.price) && (
-                          <span className="text-white font-bold text-base sm:text-lg">
+                          <span className="text-white font-bold text-sm sm:text-base">
                             €{product.price}
                           </span>
                         )}
