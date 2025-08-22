@@ -18,14 +18,18 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Invalid signature' }, { status: 400 })
   }
 
-  if (event.type === 'checkout.session.completed') {
-    const session = event.data.object
+  if (event.type === 'payment_intent.succeeded' || event.type === 'payment_intent.payment_failed') {
+    const paymentIntent = event.data.object
 
     try {
+      // Obtener Payment Intent con información expandida para acceder a los charges
+      const fullPaymentIntent = await stripe.paymentIntents.retrieve(paymentIntent.id, {
+        expand: ['charges.data.payment_method_details']
+      })
       // Obtener detalles del producto
       const product = await sanityClient.fetch(
         `*[_type == "product" && _id == $productId][0]`,
-        { productId: session.metadata?.productId }
+        { productId: paymentIntent.metadata?.productId }
       )
 
       if (!product) {
@@ -37,47 +41,74 @@ export async function POST(request: Request) {
       const transactionNumber = transactionCount + 1001
 
       // Calcular impuestos
-      const amount = session.amount_total! / 100 // Stripe usa centavos
+      const amount = fullPaymentIntent.amount / 100 // Stripe usa centavos
       const taxes = calculateTaxes(amount)
 
+      // Determinar estado de la transacción
+      const status = event.type === 'payment_intent.succeeded' ? 'success' : 'failed'
+      
       // Generar código KETO
-      const ketoCode = generateKetoCode('success', transactionNumber)
+      const ketoCode = generateKetoCode(status, transactionNumber)
+
+      // Obtener información del método de pago para datos del cliente
+      let customerEmail = 'N/A'
+      let customerName = 'N/A'
+      let city = 'N/A'
+      let paymentMethodType = 'card'
+
+      if (fullPaymentIntent.charges?.data?.length > 0) {
+        const charge = fullPaymentIntent.charges.data[0]
+        customerEmail = charge.billing_details?.email || fullPaymentIntent.receipt_email || 'N/A'
+        customerName = charge.billing_details?.name || 'N/A'
+        city = charge.billing_details?.address?.city || 'N/A'
+        
+        // Obtener el método de pago actual usado
+        if (charge.payment_method_details?.type) {
+          paymentMethodType = charge.payment_method_details.type
+        }
+      }
 
       // Crear transacción en Sanity
       const transaction = await sanityClient.create({
         _type: 'transaction',
         ketoCode,
-        stripeSessionId: session.id,
+        stripePaymentIntentId: fullPaymentIntent.id,
         amount,
         ...taxes,
-        customerEmail: session.customer_details?.email,
-        customerName: session.customer_details?.name,
+        customerEmail,
+        customerName,
         productId: {
          _ref: product._id,
          _type: 'reference',
        },
-       paymentMethod: session.payment_method_types?.[0] || 'card',
-       city: session.customer_details?.address?.city || 'N/A',
-       status: 'success',
+       paymentMethod: paymentMethodType,
+       city,
+       status,
        createdAt: new Date().toISOString(),
+       failureReason: event.type === 'payment_intent.payment_failed' ? fullPaymentIntent.last_payment_error?.message : undefined,
      })
 
-     // Preparar URL de descarga si es producto digital
-     let downloadUrl
-     if (product.type === 'digital' && product.fileUrl) {
-       downloadUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/download/${ketoCode}/${transaction._id}`
+     // Solo enviar email y preparar descarga para pagos exitosos
+     if (status === 'success') {
+       // Preparar URL de descarga si es producto digital
+       let downloadUrl
+       if (product.type === 'digital' && product.fileUrl) {
+         downloadUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/download/${ketoCode}/${transaction._id}`
+       }
+
+       // Enviar email solo para pagos exitosos
+       if (customerEmail && customerEmail !== 'N/A') {
+         await sendPurchaseEmail(
+           customerEmail,
+           customerName || 'Cliente',
+           ketoCode,
+           product.title,
+           downloadUrl
+         )
+       }
      }
 
-     // Enviar email
-     await sendPurchaseEmail(
-       session.customer_details?.email!,
-       session.customer_details?.name!,
-       ketoCode,
-       product.title,
-       downloadUrl
-     )
-
-     console.log('Transaction processed successfully:', ketoCode)
+     console.log(`Transaction processed (${status}):`, ketoCode)
    } catch (error) {
      console.error('Error processing transaction:', error)
      return NextResponse.json({ error: 'Error processing transaction' }, { status: 500 })

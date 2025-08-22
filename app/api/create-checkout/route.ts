@@ -31,6 +31,7 @@ export async function POST(request: Request) {
         productId: product._id,
         productTitle: product.title,
       },
+      receipt_email: null, // Se llenará cuando el usuario complete el formulario
     })
 
     return NextResponse.json({ 
