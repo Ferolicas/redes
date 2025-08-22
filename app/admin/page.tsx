@@ -499,6 +499,19 @@ export default function AdminPage() {
       })
     }
 
+    // Mapear método de pago a emoji/texto
+    const getPaymentMethodDisplay = (method: string) => {
+      const methods: { [key: string]: string } = {
+        'card': '💳 Tarjeta',
+        'paypal': '🅿️ PayPal',
+        'bancontact': '🏦 Bancontact',
+        'ideal': '🇳🇱 iDEAL',
+        'sepa_debit': '🏦 SEPA',
+        'klarna': '🛍️ Klarna'
+      }
+      return methods[method] || '💳 Tarjeta'
+    }
+
     // Obtener color del estado
     const getStatusColor = (status: string) => {
       const colors: { [key: string]: string } = {
@@ -562,7 +575,7 @@ export default function AdminPage() {
                   {formatDateTime(order.createdAt)} • {order.customerName || order.customerEmail}
                 </div>
                 <div className="text-xs text-slate-500 mt-1">
-                  {order.city && `📍 ${order.city}`} • {order.ketoCode}
+                  {order.city && order.city !== 'N/A' && `📍 ${order.city} • `}{getPaymentMethodDisplay(order.paymentMethod)} • {order.ketoCode}
                 </div>
               </div>
             </div>
@@ -582,7 +595,9 @@ export default function AdminPage() {
       {/* Valor principal */}
       <div className="mb-8 px-6 text-center pt-12">
         <p className="mb-3 text-sm text-white/80 font-medium">Personal • Todas las cuentas</p>
-        <h1 className="mb-3 text-7xl font-extralight tracking-tight">€{currentData.amount.toFixed(2)}</h1>
+        <h1 className="mb-3 text-7xl font-extralight tracking-tight">
+          {activeView === 'dashboard' ? `€${currentData.amount.toFixed(2)}` : currentData.amount}
+        </h1>
         <p className="text-sm text-white/80">{currentData.count} ventas</p>
       </div>
 
