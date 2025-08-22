@@ -956,28 +956,25 @@ export default function AdminPage() {
                   {products.map((product) => (
                     <div 
                       key={product._id} 
-                      className="flex rounded-2xl bg-slate-800/80 border border-slate-700/50 hover:bg-slate-800 transition-all overflow-hidden h-24"
+                      className="rounded-2xl bg-slate-800/80 border border-slate-700/50 hover:bg-slate-800 transition-all overflow-hidden p-3"
                     >
-                      {/* 50% para imagen - UPDATED */}
-                      <div className="w-1/2 p-1">
+                      <div className="flex flex-col h-full">
                         {product.image ? (
                           <img 
                             src={product.image} 
                             alt={product.title}
-                            className="w-full h-full object-cover rounded-xl"
-                            style={{ padding: '3%' }}
+                            className="w-full h-32 object-cover rounded-xl mb-3"
                           />
                         ) : (
-                          <div className="w-full h-full bg-slate-700 rounded-xl flex items-center justify-center" style={{ margin: '3%', width: '94%', height: '94%' }}>
-                            <Package size={20} className="text-slate-500" />
+                          <div className="w-full h-32 bg-slate-700 rounded-xl flex items-center justify-center mb-3">
+                            <Package size={24} className="text-slate-500" />
                           </div>
                         )}
-                      </div>
-                      {/* 50% para título, descripción y precio */}
-                      <div className="w-1/2 p-2 flex flex-col justify-center">
-                        <p className="font-medium text-white text-xs truncate mb-1">{product.title}</p>
-                        <p className="text-xs text-slate-400 truncate mb-1">{product.description}</p>
-                        <p className="font-semibold text-xs text-white">€{product.price?.toFixed(2) || '0.00'}</p>
+                        <div className="flex-1">
+                          <p className="font-medium text-white text-sm truncate mb-1">{product.title}</p>
+                          <p className="text-xs text-slate-400 line-clamp-2 mb-2">{product.description}</p>
+                          <p className="font-semibold text-sm text-white">€{product.price?.toFixed(2) || '0.00'}</p>
+                        </div>
                       </div>
                     </div>
                   ))}
