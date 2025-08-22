@@ -56,8 +56,8 @@ export async function POST(request: Request) {
       let city = 'N/A'
       let paymentMethodType = 'card'
 
-      if (fullPaymentIntent.charges?.data?.length > 0) {
-        const charge = fullPaymentIntent.charges.data[0]
+      if ((fullPaymentIntent as any).charges?.data?.length > 0) {
+        const charge = (fullPaymentIntent as any).charges.data[0]
         customerEmail = charge.billing_details?.email || fullPaymentIntent.receipt_email || 'N/A'
         customerName = charge.billing_details?.name || 'N/A'
         city = charge.billing_details?.address?.city || 'N/A'
