@@ -13,6 +13,231 @@ import {
   ChevronUp
 } from 'lucide-react'
 
+// Tipos para los formularios
+interface ProductFormData {
+  title: string;
+  description: string;
+  price: string;
+  originalPrice: string;
+  stripePriceId: string;
+  category: string;
+  file: File | null;
+}
+
+interface ListFormData {
+  title: string;
+  category: string;
+  url: string;
+  image: File | null;
+}
+
+// Modal para crear producto
+const CreateProductModal = ({ 
+  onClose, 
+  productForm, 
+  setProductForm 
+}: { 
+  onClose: () => void;
+  productForm: ProductFormData;
+  setProductForm: React.Dispatch<React.SetStateAction<ProductFormData>>;
+}) => {
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    // TODO: Implementar creación de producto
+    console.log('Producto a crear:', productForm)
+    onClose()
+  }
+
+  const handleInputChange = (field: string, value: string) => {
+    setProductForm(prev => ({ ...prev, [field]: value }))
+  }
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+      <div className="m-4 w-full max-w-md animate-in slide-in-from-bottom-4 duration-300 rounded-3xl bg-slate-900 p-8 shadow-2xl border border-slate-700 max-h-[90vh] overflow-y-auto">
+        <h2 className="mb-6 text-xl font-semibold text-white">Nuevo Producto</h2>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <input 
+            value={productForm.title}
+            onChange={(e) => handleInputChange('title', e.target.value)}
+            className="w-full rounded-2xl border border-slate-600 bg-slate-800 p-4 text-white placeholder-slate-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all"
+            placeholder="Nombre del producto"
+            required
+          />
+          <textarea 
+            value={productForm.description}
+            onChange={(e) => handleInputChange('description', e.target.value)}
+            className="h-24 w-full rounded-2xl border border-slate-600 bg-slate-800 p-4 text-white placeholder-slate-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all resize-none"
+            placeholder="Descripción del producto"
+          />
+          <input 
+            value={productForm.price}
+            onChange={(e) => handleInputChange('price', e.target.value)}
+            className="w-full rounded-2xl border border-slate-600 bg-slate-800 p-4 text-white placeholder-slate-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all"
+            placeholder="Precio a Cobrar (€)"
+            type="number"
+            step="0.01"
+            min="0"
+            required
+          />
+          <input 
+            value={productForm.originalPrice}
+            onChange={(e) => handleInputChange('originalPrice', e.target.value)}
+            className="w-full rounded-2xl border border-slate-600 bg-slate-800 p-4 text-white placeholder-slate-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all"
+            placeholder="Precio Original (€) - Opcional"
+            type="number"
+            step="0.01"
+            min="0"
+          />
+          <input 
+            value={productForm.stripePriceId}
+            onChange={(e) => handleInputChange('stripePriceId', e.target.value)}
+            className="w-full rounded-2xl border border-slate-600 bg-slate-800 p-4 text-white placeholder-slate-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all"
+            placeholder="Stripe Price ID"
+            required
+          />
+          <select
+            value={productForm.category}
+            onChange={(e) => handleInputChange('category', e.target.value)}
+            className="w-full rounded-2xl border border-slate-600 bg-slate-800 p-4 text-white focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all"
+          >
+            <option value="Asesoria">Asesoría</option>
+            <option value="Libro">Libro</option>
+            <option value="Servicios">Servicios</option>
+          </select>
+          {productForm.category === 'Libro' && (
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-slate-300">Archivo PDF del libro</label>
+              <input 
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                  const file = e.target.files?.[0]
+                  if (file) {
+                    setProductForm(prev => ({ ...prev, file: file }))
+                  }
+                }}
+                className="w-full rounded-2xl border border-slate-600 bg-slate-800 p-4 text-white file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-medium file:bg-blue-600 file:text-white hover:file:bg-blue-700 file:cursor-pointer"
+                type="file"
+                accept=".pdf"
+              />
+              {productForm.file && (
+                <p className="text-xs text-green-400">Archivo seleccionado: {productForm.file.name}</p>
+              )}
+            </div>
+          )}
+          <div className="mt-6 flex gap-3">
+            <button 
+              type="button"
+              onClick={onClose}
+              className="flex-1 rounded-2xl bg-slate-800 py-3 px-4 font-medium text-slate-300 hover:bg-slate-700 transition-colors"
+            >
+              Cancelar
+            </button>
+            <button 
+              type="submit"
+              className="flex-1 rounded-2xl bg-gradient-to-r from-blue-600 to-purple-600 py-3 px-4 font-medium text-white hover:from-blue-700 hover:to-purple-700 transition-all transform hover:scale-105"
+            >
+              Crear
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  )
+}
+
+// Modal para crear lista
+const CreateListModal = ({ 
+  onClose, 
+  listForm, 
+  setListForm 
+}: { 
+  onClose: () => void;
+  listForm: ListFormData;
+  setListForm: React.Dispatch<React.SetStateAction<ListFormData>>;
+}) => {
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    // TODO: Implementar creación de lista
+    console.log('Lista a crear:', listForm)
+    onClose()
+  }
+
+  const handleInputChange = (field: string, value: string) => {
+    setListForm(prev => ({ ...prev, [field]: value }))
+  }
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file) {
+      setListForm(prev => ({ ...prev, image: file }))
+    }
+  }
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+      <div className="m-4 w-full max-w-md animate-in slide-in-from-bottom-4 duration-300 rounded-3xl bg-slate-900 p-8 shadow-2xl border border-slate-700">
+        <h2 className="mb-6 text-xl font-semibold text-white">Nueva Lista Amazon</h2>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <input 
+            value={listForm.title}
+            onChange={(e) => handleInputChange('title', e.target.value)}
+            className="w-full rounded-2xl border border-slate-600 bg-slate-800 p-4 text-white placeholder-slate-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all"
+            placeholder="Título de la lista"
+            required
+          />
+          <select
+            value={listForm.category}
+            onChange={(e) => handleInputChange('category', e.target.value)}
+            className="w-full rounded-2xl border border-slate-600 bg-slate-800 p-4 text-white focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all"
+          >
+            <option value="cooking">Cocina Keto</option>
+            <option value="supplements">Suplementos</option>
+            <option value="utensils">Utensilios</option>
+            <option value="ingredients">Ingredientes</option>
+            <option value="books">Libros</option>
+            <option value="sports">Deportes</option>
+          </select>
+          <input 
+            value={listForm.url}
+            onChange={(e) => handleInputChange('url', e.target.value)}
+            className="w-full rounded-2xl border border-slate-600 bg-slate-800 p-4 text-white placeholder-slate-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all"
+            placeholder="URL de Amazon"
+            type="url"
+            required
+          />
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-slate-300">Imagen de la lista</label>
+            <input 
+              onChange={handleImageChange}
+              className="w-full rounded-2xl border border-slate-600 bg-slate-800 p-4 text-white file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-medium file:bg-blue-600 file:text-white hover:file:bg-blue-700 file:cursor-pointer"
+              type="file"
+              accept="image/*"
+            />
+            {listForm.image && (
+              <p className="text-xs text-green-400">Imagen seleccionada: {listForm.image.name}</p>
+            )}
+          </div>
+          <div className="mt-6 flex gap-3">
+            <button 
+              type="button"
+              onClick={onClose}
+              className="flex-1 rounded-2xl bg-slate-800 py-3 px-4 font-medium text-slate-300 hover:bg-slate-700 transition-colors"
+            >
+              Cancelar
+            </button>
+            <button 
+              type="submit"
+              className="flex-1 rounded-2xl bg-gradient-to-r from-blue-600 to-purple-600 py-3 px-4 font-medium text-white hover:from-blue-700 hover:to-purple-700 transition-all transform hover:scale-105"
+            >
+              Crear
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  )
+}
+
 export default function AdminPage() {
   const [showProductModal, setShowProductModal] = useState(false)
   const [showListModal, setShowListModal] = useState(false)
@@ -30,15 +255,7 @@ export default function AdminPage() {
   const [salesError, setSalesError] = useState(null)
   
   // --- Estados para formularios ---
-  const [productForm, setProductForm] = useState<{
-    title: string;
-    description: string;
-    price: string;
-    originalPrice: string;
-    stripePriceId: string;
-    category: string;
-    file: File | null;
-  }>({
+  const [productForm, setProductForm] = useState<ProductFormData>({
     title: '',
     description: '',
     price: '',
@@ -48,12 +265,7 @@ export default function AdminPage() {
     file: null
   })
   
-  const [listForm, setListForm] = useState<{
-    title: string;
-    category: string;
-    url: string;
-    image: File | null;
-  }>({
+  const [listForm, setListForm] = useState<ListFormData>({
     title: '',
     category: 'cooking',
     url: '',
@@ -202,195 +414,6 @@ export default function AdminPage() {
   }
 
   const currentData = getCurrentValue()
-
-  const CreateProductModal = ({ onClose }: { onClose: () => void }) => {
-    const handleSubmit = async (e: React.FormEvent) => {
-      e.preventDefault()
-      // TODO: Implementar creación de producto
-      console.log('Producto a crear:', productForm)
-      onClose()
-    }
-
-    const handleInputChange = (field: string, value: string) => {
-      setProductForm(prev => ({ ...prev, [field]: value }))
-    }
-
-    return (
-      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
-        <div className="m-4 w-full max-w-md animate-in slide-in-from-bottom-4 duration-300 rounded-3xl bg-slate-900 p-8 shadow-2xl border border-slate-700 max-h-[90vh] overflow-y-auto">
-          <h2 className="mb-6 text-xl font-semibold text-white">Nuevo Producto</h2>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <input 
-              value={productForm.title}
-              onChange={(e) => handleInputChange('title', e.target.value)}
-              className="w-full rounded-2xl border border-slate-600 bg-slate-800 p-4 text-white placeholder-slate-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all"
-              placeholder="Nombre del producto"
-              required
-            />
-            <textarea 
-              value={productForm.description}
-              onChange={(e) => handleInputChange('description', e.target.value)}
-              className="h-24 w-full rounded-2xl border border-slate-600 bg-slate-800 p-4 text-white placeholder-slate-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all resize-none"
-              placeholder="Descripción del producto"
-            />
-            <input 
-              value={productForm.price}
-              onChange={(e) => handleInputChange('price', e.target.value)}
-              className="w-full rounded-2xl border border-slate-600 bg-slate-800 p-4 text-white placeholder-slate-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all"
-              placeholder="Precio a Cobrar (€)"
-              type="number"
-              step="0.01"
-              min="0"
-              required
-            />
-            <input 
-              value={productForm.originalPrice}
-              onChange={(e) => handleInputChange('originalPrice', e.target.value)}
-              className="w-full rounded-2xl border border-slate-600 bg-slate-800 p-4 text-white placeholder-slate-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all"
-              placeholder="Precio Original (€) - Opcional"
-              type="number"
-              step="0.01"
-              min="0"
-            />
-            <input 
-              value={productForm.stripePriceId}
-              onChange={(e) => handleInputChange('stripePriceId', e.target.value)}
-              className="w-full rounded-2xl border border-slate-600 bg-slate-800 p-4 text-white placeholder-slate-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all"
-              placeholder="Stripe Price ID"
-              required
-            />
-            <select
-              value={productForm.category}
-              onChange={(e) => handleInputChange('category', e.target.value)}
-              className="w-full rounded-2xl border border-slate-600 bg-slate-800 p-4 text-white focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all"
-            >
-              <option value="Asesoria">Asesoría</option>
-              <option value="Libro">Libro</option>
-              <option value="Servicios">Servicios</option>
-            </select>
-            {productForm.category === 'Libro' && (
-              <div className="space-y-2">
-                <label className="block text-sm font-medium text-slate-300">Archivo PDF del libro</label>
-                <input 
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                    const file = e.target.files?.[0]
-                    if (file) {
-                      setProductForm(prev => ({ ...prev, file: file }))
-                    }
-                  }}
-                  className="w-full rounded-2xl border border-slate-600 bg-slate-800 p-4 text-white file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-medium file:bg-blue-600 file:text-white hover:file:bg-blue-700 file:cursor-pointer"
-                  type="file"
-                  accept=".pdf"
-                />
-                {productForm.file && (
-                  <p className="text-xs text-green-400">Archivo seleccionado: {productForm.file.name}</p>
-                )}
-              </div>
-            )}
-            <div className="mt-6 flex gap-3">
-              <button 
-                type="button"
-                onClick={onClose}
-                className="flex-1 rounded-2xl bg-slate-800 py-3 px-4 font-medium text-slate-300 hover:bg-slate-700 transition-colors"
-              >
-                Cancelar
-              </button>
-              <button 
-                type="submit"
-                className="flex-1 rounded-2xl bg-gradient-to-r from-blue-600 to-purple-600 py-3 px-4 font-medium text-white hover:from-blue-700 hover:to-purple-700 transition-all transform hover:scale-105"
-              >
-                Crear
-              </button>
-            </div>
-          </form>
-        </div>
-      </div>
-    )
-  }
-
-  const CreateListModal = ({ onClose }: { onClose: () => void }) => {
-    const handleSubmit = async (e: React.FormEvent) => {
-      e.preventDefault()
-      // TODO: Implementar creación de lista
-      console.log('Lista a crear:', listForm)
-      onClose()
-    }
-
-    const handleInputChange = (field: string, value: string) => {
-      setListForm(prev => ({ ...prev, [field]: value }))
-    }
-
-    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-      const file = e.target.files?.[0]
-      if (file) {
-        setListForm(prev => ({ ...prev, image: file }))
-      }
-    }
-
-    return (
-      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
-        <div className="m-4 w-full max-w-md animate-in slide-in-from-bottom-4 duration-300 rounded-3xl bg-slate-900 p-8 shadow-2xl border border-slate-700">
-          <h2 className="mb-6 text-xl font-semibold text-white">Nueva Lista Amazon</h2>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <input 
-              value={listForm.title}
-              onChange={(e) => handleInputChange('title', e.target.value)}
-              className="w-full rounded-2xl border border-slate-600 bg-slate-800 p-4 text-white placeholder-slate-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all"
-              placeholder="Título de la lista"
-              required
-            />
-            <select
-              value={listForm.category}
-              onChange={(e) => handleInputChange('category', e.target.value)}
-              className="w-full rounded-2xl border border-slate-600 bg-slate-800 p-4 text-white focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all"
-            >
-              <option value="cooking">Cocina Keto</option>
-              <option value="supplements">Suplementos</option>
-              <option value="utensils">Utensilios</option>
-              <option value="ingredients">Ingredientes</option>
-              <option value="books">Libros</option>
-              <option value="sports">Deportes</option>
-            </select>
-            <input 
-              value={listForm.url}
-              onChange={(e) => handleInputChange('url', e.target.value)}
-              className="w-full rounded-2xl border border-slate-600 bg-slate-800 p-4 text-white placeholder-slate-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all"
-              placeholder="URL de Amazon"
-              type="url"
-              required
-            />
-            <div className="space-y-2">
-              <label className="block text-sm font-medium text-slate-300">Imagen de la lista</label>
-              <input 
-                onChange={handleImageChange}
-                className="w-full rounded-2xl border border-slate-600 bg-slate-800 p-4 text-white file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-medium file:bg-blue-600 file:text-white hover:file:bg-blue-700 file:cursor-pointer"
-                type="file"
-                accept="image/*"
-              />
-              {listForm.image && (
-                <p className="text-xs text-green-400">Imagen seleccionada: {listForm.image.name}</p>
-              )}
-            </div>
-            <div className="mt-6 flex gap-3">
-              <button 
-                type="button"
-                onClick={onClose}
-                className="flex-1 rounded-2xl bg-slate-800 py-3 px-4 font-medium text-slate-300 hover:bg-slate-700 transition-colors"
-              >
-                Cancelar
-              </button>
-              <button 
-                type="submit"
-                className="flex-1 rounded-2xl bg-gradient-to-r from-blue-600 to-purple-600 py-3 px-4 font-medium text-white hover:from-blue-700 hover:to-purple-700 transition-all transform hover:scale-105"
-              >
-                Crear
-              </button>
-            </div>
-          </form>
-        </div>
-      </div>
-    )
-  }
 
   const TransactionsList = ({ filter }: { filter: string }) => {
     // Formatear fecha y hora
@@ -810,30 +833,38 @@ export default function AdminPage() {
 
       {/* Modales */}
       {showProductModal && (
-        <CreateProductModal onClose={() => {
-          setShowProductModal(false)
-          setProductForm({
-            title: '',
-            description: '',
-            price: '',
-            originalPrice: '',
-            stripePriceId: '',
-            category: 'Asesoria',
-            file: null
-          })
-        }} />
+        <CreateProductModal 
+          productForm={productForm}
+          setProductForm={setProductForm}
+          onClose={() => {
+            setShowProductModal(false)
+            setProductForm({
+              title: '',
+              description: '',
+              price: '',
+              originalPrice: '',
+              stripePriceId: '',
+              category: 'Asesoria',
+              file: null
+            })
+          }} 
+        />
       )}
 
       {showListModal && (
-        <CreateListModal onClose={() => {
-          setShowListModal(false)
-          setListForm({
-            title: '',
-            category: 'cooking',
-            url: '',
-            image: null
-          })
-        }} />
+        <CreateListModal 
+          listForm={listForm}
+          setListForm={setListForm}
+          onClose={() => {
+            setShowListModal(false)
+            setListForm({
+              title: '',
+              category: 'cooking',
+              url: '',
+              image: null
+            })
+          }} 
+        />
       )}
     </div>
   )
