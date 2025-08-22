@@ -119,9 +119,9 @@ export default function PurchaseModal({ product, onClose }: PurchaseModalProps) 
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div className="bg-gradient-to-br from-slate-900 to-slate-800 rounded-2xl max-w-sm w-full h-[90vh] flex flex-col text-white border border-white/10">
-        {/* Header - 20% */}
-        <div className="h-[20%] relative p-4 border-b border-white/10 flex-shrink-0">
+      <div className="bg-gradient-to-br from-slate-900 to-slate-800 rounded-2xl max-w-sm w-full max-h-[90vh] flex flex-col text-white border border-white/10 overflow-hidden">
+        {/* Header - Fixed */}
+        <div className="relative p-4 border-b border-white/10 flex-shrink-0">
           <button
             onClick={onClose}
             className="absolute top-2 right-2 bg-white/20 text-white rounded-full p-2 hover:bg-white/30 backdrop-blur-md z-10"
@@ -129,7 +129,7 @@ export default function PurchaseModal({ product, onClose }: PurchaseModalProps) 
             <X size={16} />
           </button>
           
-          <div className="flex items-center gap-4 h-full">
+          <div className="flex items-center gap-4">
             {product.image && (
               <img
                 src={product.image}
@@ -141,22 +141,22 @@ export default function PurchaseModal({ product, onClose }: PurchaseModalProps) 
               <h2 className="text-lg font-bold text-white mb-1 line-clamp-2 leading-tight">
                 {product.title}
               </h2>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 flex-wrap">
                 {product.originalPrice && product.originalPrice > product.price && (
                   <>
                     <span className="text-white/60 line-through text-sm">
                       €{product.originalPrice}
                     </span>
-                    <span className="text-white font-bold text-xl">
+                    <span className="text-white font-bold text-lg">
                       €{product.price}
                     </span>
-                    <span className="text-green-400 text-sm font-medium bg-green-400/20 px-2 py-1 rounded">
+                    <span className="text-green-400 text-xs font-medium bg-green-400/20 px-2 py-1 rounded">
                       {discountPercentage}% off
                     </span>
                   </>
                 )}
                 {(!product.originalPrice || product.originalPrice <= product.price) && (
-                  <span className="text-white font-bold text-xl">
+                  <span className="text-white font-bold text-lg">
                     €{product.price}
                   </span>
                 )}
@@ -165,10 +165,11 @@ export default function PurchaseModal({ product, onClose }: PurchaseModalProps) 
           </div>
         </div>
 
-        {/* Description - 40% */}
-        <div className="h-[40%] p-4 border-b border-white/10 flex-shrink-0">
-          <h3 className="text-sm font-semibold text-white/90 mb-3">Descripción</h3>
-          <div className="h-[calc(100%-32px)] overflow-y-auto scrollbar-hide">
+        {/* Scrollable Content */}
+        <div className="flex-1 overflow-y-auto scrollbar-hide">
+          {/* Description Section */}
+          <div className="p-4 border-b border-white/10">
+            <h3 className="text-sm font-semibold text-white/90 mb-3">Descripción</h3>
             <p className="text-white/70 text-sm mb-4 leading-relaxed">
               {product.description}
             </p>
@@ -188,13 +189,11 @@ export default function PurchaseModal({ product, onClose }: PurchaseModalProps) 
               </div>
             )}
           </div>
-        </div>
 
-        {/* Payment Section - 40% */}
-        <div className="h-[40%] p-4 flex flex-col flex-shrink-0">
-          <h3 className="text-sm font-semibold text-white/90 mb-4 text-center">Finalizar Compra</h3>
-          
-          <div className="flex-1 flex flex-col justify-center">
+          {/* Payment Section */}
+          <div className="p-4">
+            <h3 className="text-sm font-semibold text-white/90 mb-4 text-center">Finalizar Compra</h3>
+            
             {loadingIntent ? (
               <div className="flex items-center justify-center py-8">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
@@ -222,7 +221,7 @@ export default function PurchaseModal({ product, onClose }: PurchaseModalProps) 
                 <CheckoutForm product={product} onClose={onClose} />
               </Elements>
             ) : (
-              <div className="text-center text-red-400">
+              <div className="text-center text-red-400 py-8">
                 Error al cargar el formulario de pago
               </div>
             )}
