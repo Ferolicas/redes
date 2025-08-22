@@ -38,6 +38,43 @@ export default defineConfig({
               .child(S.documentTypeList('amazonList').title('Listas Amazon')),
             S.divider(),
             S.listItem()
+              .title('Clientes')
+              .icon(() => '👥')
+              .child(S.documentTypeList('clientes').title('Clientes')),
+            S.listItem()
+              .title('Clientes Activos')
+              .icon(() => '✅')
+              .child(
+                S.documentTypeList('clientes')
+                  .title('Clientes Activos')
+                  .filter('_type == "clientes" && estadoVenta == "exitoso"')
+                  .defaultOrdering([{ field: 'fechaCompra', direction: 'desc' }])
+              ),
+            S.listItem()
+              .title('Suscriptores Newsletter')
+              .icon(() => '📧')
+              .child(
+                S.documentTypeList('clientes')
+                  .title('Suscriptores Newsletter')
+                  .filter('_type == "clientes" && suscritoNewsletter == true')
+                  .defaultOrdering([{ field: 'fechaSuscripcionNewsletter', direction: 'desc' }])
+              ),
+            S.divider(),
+            S.listItem()
+              .title('Códigos de Descuento')
+              .icon(() => '🎁')
+              .child(S.documentTypeList('discountCodes').title('Códigos de Descuento')),
+            S.listItem()
+              .title('Códigos Activos')
+              .icon(() => '🟢')
+              .child(
+                S.documentTypeList('discountCodes')
+                  .title('Códigos Activos')
+                  .filter('_type == "discountCodes" && activo == true && usado == false')
+                  .defaultOrdering([{ field: 'fechaCreacion', direction: 'desc' }])
+              ),
+            S.divider(),
+            S.listItem()
               .title('Transacciones')
               .icon(() => '💰')
               .child(

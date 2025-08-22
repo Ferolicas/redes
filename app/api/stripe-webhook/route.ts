@@ -110,25 +110,8 @@ export async function POST(request: Request) {
        failureReason: event.type === 'payment_intent.payment_failed' ? fullPaymentIntent.last_payment_error?.message : undefined,
      })
 
-     // Solo enviar email y preparar descarga para pagos exitosos
-     if (status === 'success') {
-       // Preparar URL de descarga si es producto digital
-       let downloadUrl
-       if (product.type === 'digital' && product.fileUrl) {
-         downloadUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/download/${ketoCode}/${transaction._id}`
-       }
-
-       // Enviar email solo para pagos exitosos
-       if (customerEmail && customerEmail !== 'N/A') {
-         await sendPurchaseEmail(
-           customerEmail,
-           customerName || 'Cliente',
-           ketoCode,
-           product.title,
-           downloadUrl
-         )
-       }
-     }
+     // No enviar email aquí - se enviará cuando el cliente complete sus datos
+     // Solo registrar la transacción exitosa
 
      console.log(`Transaction processed (${status}):`, ketoCode)
    } catch (error) {

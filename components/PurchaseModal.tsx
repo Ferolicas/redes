@@ -39,7 +39,7 @@ function CheckoutForm({ product, onClose }: { product: Product; onClose: () => v
     const { error: confirmError } = await stripe.confirmPayment({
       elements,
       confirmParams: {
-        return_url: `${window.location.origin}/exito`,
+        return_url: `${window.location.origin}/complete-order`,
       },
     })
 

@@ -61,6 +61,9 @@ export async function GET() {
       count(*[_type == "transaction"])
     `)
 
+    // Obtener cantidad de listas de Amazon
+    const totalAmazonLists = await sanityClient.fetch(`count(*[_type == "amazonList"])`)
+
     // Cálculos
     const calculateStats = (transactions: any[]) => ({
       count: transactions.length,
@@ -96,6 +99,9 @@ export async function GET() {
       orders: {
         daily: dailyOrdersCount,
         total: totalOrdersCount
+      },
+      amazonLists: {
+        total: totalAmazonLists
       }
     }
 

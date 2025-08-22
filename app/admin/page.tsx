@@ -630,6 +630,12 @@ export default function AdminPage() {
           amount: stats?.orders?.total || 0,
           count: 0
         }
+      case 'lists':
+        return {
+          title: `${stats?.amazonLists?.total || 0} listas`,
+          amount: stats?.amazonLists?.total || 0,
+          count: 0
+        }
       default:
         return { title: 'Ventas Totales', amount: 0, count: 0 }
     }
@@ -854,7 +860,7 @@ export default function AdminPage() {
         <h1 className="mb-3 text-7xl font-extralight tracking-tight">
           {activeView === 'dashboard' ? `€${currentData.amount.toFixed(2)}` : currentData.amount}
         </h1>
-        <p className="text-sm text-white/80">{currentData.count} ventas</p>
+        <p className="text-sm text-white/80">{activeView === 'lists' || activeView === 'products' || activeView === 'orders' ? '' : `${currentData.count} ventas`}</p>
       </div>
 
       {/* Botones de acción principales */}
