@@ -60,20 +60,26 @@ export const productSchema = {
       of: [{ type: 'string' }],
     },
     {
-      name: 'type',
-      title: 'Tipo',
+      name: 'category',
+      title: 'Categoría',
       type: 'string',
       options: {
         list: [
-          { title: 'Digital', value: 'digital' },
-          { title: 'Servicio', value: 'service' },
+          { title: 'Asesoría', value: 'Asesoria' },
+          { title: 'Libro', value: 'Libro' },
+          { title: 'Servicios', value: 'Servicios' },
         ],
       },
+      validation: (Rule: any) => Rule.required(),
     },
     {
-      name: 'fileUrl',
-      title: 'URL del archivo (para productos digitales)',
-      type: 'string',
+      name: 'pdfFile',
+      title: 'Archivo PDF (para libros)',
+      type: 'file',
+      options: {
+        accept: '.pdf'
+      },
+      hidden: ({ document }: any) => document?.category !== 'Libro',
     },
     {
       name: 'createdAt',

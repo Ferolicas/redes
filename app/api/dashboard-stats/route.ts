@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { sanityClient } from '@/lib/sanity'
+import { sanityClient } from '../../../lib/sanity'
 
 export async function GET() {
   try {
@@ -35,34 +35,66 @@ export async function GET() {
       }
     `)
 
-    // Pagos fallidos, pendientes y devoluciones
+    // Pagos fallidos
     const failedPayments = await sanityClient.fetch(`count(*[_type == "transaction" && status == "failed"])`)
-    const pendingPayments = await sanityClient.fetch(`count(*[_type == "transaction" && status == "pending"])`)
-    const refunds = await sanityClient.fetch(`count(*[_type == "transaction" && status == "refunded"])`)
+
+    // Obtener total de productos
+    const totalProducts = await sanityClient.fetch(`count(*[_type == "product"])`)
+
+    // Obtener ventas exitosas de productos del día
+    const dailyProductSales = await sanityClient.fetch(`
+      count(*[_type == "transaction" && status == "success" && createdAt >= $todayStart])
+    `, { todayStart: todayStart.toISOString() })
+
+    // Obtener ventas exitosas totales de productos
+    const totalProductSales = await sanityClient.fetch(`
+      count(*[_type == "transaction" && status == "success"])
+    `)
+
+    // Obtener pedidos del día (todos los estados)
+    const dailyOrders = await sanityClient.fetch(`
+      count(*[_type == "transaction" && createdAt >= $todayStart])
+    `, { todayStart: todayStart.toISOString() })
+
+    // Obtener pedidos totales (todos los estados)
+    const totalOrders = await sanityClient.fetch(`count(*[_type == "transaction"])`)
 
     // Cálculos
     const calculateStats = (transactions: any[]) => ({
       count: transactions.length,
-      amount: transactions.reduce((sum, t) => sum + t.amount, 0),
-      net: transactions.reduce((sum, t) => sum + t.netAmount, 0),
+      amount: transactions.reduce((sum, t) => sum + (t.amount || 0), 0),
+      net: transactions.reduce((sum, t) => sum + (t.netAmount || 0), 0),
     })
 
-    const monthlyIVA = monthlySales.reduce((sum: number, t: any) => sum + (t.iva || 0), 0)
-    const monthlyIRPF = monthlySales.reduce((sum: number, t: any) => sum + (t.irpf || 0), 0)
-    const totalIVA = totalSales.reduce((sum: number, t: any) => sum + (t.iva || 0), 0)
-    const totalIRPF = totalSales.reduce((sum: number, t: any) => sum + (t.irpf || 0), 0)
+    // Calcular IVA e IRPF desde las ventas (21% IVA, 15% IRPF)
+    const totalIVA = totalSales.reduce((sum: number, t: any) => {
+      // Si existe el valor IVA almacenado, usarlo; si no, calcular 21% del amount
+      const iva = t.iva !== undefined && t.iva !== null ? t.iva : ((t.amount || 0) * 0.21)
+      return sum + iva
+    }, 0)
+    
+    const totalIRPF = totalSales.reduce((sum: number, t: any) => {
+      // Si existe el valor IRPF almacenado, usarlo; si no, calcular 15% del amount
+      const irpf = t.irpf !== undefined && t.irpf !== null ? t.irpf : ((t.amount || 0) * 0.15)
+      return sum + irpf
+    }, 0)
 
     const stats = {
       dailySales: calculateStats(dailySales),
       monthlySales: calculateStats(monthlySales),
       totalSales: calculateStats(totalSales),
-      monthlyIVA: Number(monthlyIVA.toFixed(2)),
-      monthlyIRPF: Number(monthlyIRPF.toFixed(2)),
       totalIVA: Number(totalIVA.toFixed(2)),
       totalIRPF: Number(totalIRPF.toFixed(2)),
       failedPayments,
-      pendingPayments,
-      refunds,
+      products: {
+        total: totalProducts,
+        dailySales: dailyProductSales,
+        totalSales: totalProductSales
+      },
+      orders: {
+        daily: dailyOrders,
+        total: totalOrders
+      }
     }
 
     return NextResponse.json(stats)

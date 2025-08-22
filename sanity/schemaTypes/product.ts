@@ -82,37 +82,27 @@ export const product = defineType({
       description: 'Lista de elementos que incluye el producto',
     }),
     defineField({
-      name: 'type',
-      title: 'Tipo de Producto',
-      type: 'string',
-      options: {
-        list: [
-          { title: 'Digital', value: 'digital' },
-          { title: 'Servicio', value: 'service' },
-          { title: 'Físico', value: 'physical' },
-        ],
-      },
-      initialValue: 'digital',
-    }),
-    defineField({
-      name: 'fileUrl',
-      title: 'URL del archivo (para productos digitales)',
-      type: 'string',
-      hidden: ({ document }) => document?.type !== 'digital',
-    }),
-    defineField({
       name: 'category',
       title: 'Categoría',
       type: 'string',
       options: {
         list: [
-          { title: 'Recetas Keto', value: 'recipes' },
-          { title: 'Planes de Alimentación', value: 'meal-plans' },
-          { title: 'Guías Nutricionales', value: 'nutrition-guides' },
-          { title: 'Suplementos', value: 'supplements' },
-          { title: 'Asesoría', value: 'consulting' },
+          { title: 'Asesoría', value: 'Asesoria' },
+          { title: 'Libro', value: 'Libro' },
+          { title: 'Servicios', value: 'Servicios' },
         ],
       },
+      validation: (Rule) => Rule.required(),
+      initialValue: 'Asesoria',
+    }),
+    defineField({
+      name: 'pdfFile',
+      title: 'Archivo PDF (para libros)',
+      type: 'file',
+      options: {
+        accept: '.pdf'
+      },
+      hidden: ({ document }) => document?.category !== 'Libro',
     }),
     defineField({
       name: 'featured',
@@ -144,13 +134,13 @@ export const product = defineType({
       title: 'title',
       media: 'image',
       price: 'price',
-      type: 'type',
+      category: 'category',
     },
     prepare(selection) {
-      const { title, media, price, type } = selection
+      const { title, media, price, category } = selection
       return {
         title,
-        subtitle: `€${price} - ${type}`,
+        subtitle: `€${price} - ${category}`,
         media,
       }
     },
