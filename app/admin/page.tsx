@@ -41,11 +41,48 @@ const CreateProductModal = ({
   productForm: ProductFormData;
   setProductForm: React.Dispatch<React.SetStateAction<ProductFormData>>;
 }) => {
+  const [loading, setLoading] = useState(false)
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    // TODO: Implementar creación de producto
-    console.log('Producto a crear:', productForm)
-    onClose()
+    setLoading(true)
+
+    try {
+      // Preparar datos para enviar
+      const productData = {
+        title: productForm.title,
+        description: productForm.description,
+        price: parseFloat(productForm.price),
+        originalPrice: productForm.originalPrice ? parseFloat(productForm.originalPrice) : undefined,
+        stripePriceId: productForm.stripePriceId,
+        category: productForm.category,
+        type: productForm.category === 'Libro' ? 'digital' : 'service',
+        // TODO: Implementar subida de archivo PDF si es necesario
+      }
+
+      const response = await fetch('/api/products', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(productData),
+      })
+
+      if (!response.ok) {
+        throw new Error('Error al crear el producto')
+      }
+
+      const result = await response.json()
+      console.log('Producto creado exitosamente:', result)
+      
+      // Cerrar modal y limpiar formulario
+      onClose()
+    } catch (error) {
+      console.error('Error al crear producto:', error)
+      alert('Error al crear el producto. Por favor, inténtalo de nuevo.')
+    } finally {
+      setLoading(false)
+    }
   }
 
   const handleInputChange = (field: string, value: string) => {
@@ -128,15 +165,17 @@ const CreateProductModal = ({
             <button 
               type="button"
               onClick={onClose}
-              className="flex-1 rounded-2xl bg-slate-800 py-3 px-4 font-medium text-slate-300 hover:bg-slate-700 transition-colors"
+              disabled={loading}
+              className="flex-1 rounded-2xl bg-slate-800 py-3 px-4 font-medium text-slate-300 hover:bg-slate-700 transition-colors disabled:opacity-50"
             >
               Cancelar
             </button>
             <button 
               type="submit"
-              className="flex-1 rounded-2xl bg-gradient-to-r from-blue-600 to-purple-600 py-3 px-4 font-medium text-white hover:from-blue-700 hover:to-purple-700 transition-all transform hover:scale-105"
+              disabled={loading}
+              className="flex-1 rounded-2xl bg-gradient-to-r from-blue-600 to-purple-600 py-3 px-4 font-medium text-white hover:from-blue-700 hover:to-purple-700 transition-all transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
             >
-              Crear
+              {loading ? 'Creando...' : 'Crear'}
             </button>
           </div>
         </form>
@@ -155,11 +194,45 @@ const CreateListModal = ({
   listForm: ListFormData;
   setListForm: React.Dispatch<React.SetStateAction<ListFormData>>;
 }) => {
+  const [loading, setLoading] = useState(false)
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    // TODO: Implementar creación de lista
-    console.log('Lista a crear:', listForm)
-    onClose()
+    setLoading(true)
+
+    try {
+      // Preparar datos para enviar
+      const listData = {
+        title: listForm.title,
+        category: listForm.category,
+        url: listForm.url,
+        // TODO: Implementar subida de imagen si es necesario
+        order: 0, // Por defecto
+      }
+
+      const response = await fetch('/api/amazon-lists', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(listData),
+      })
+
+      if (!response.ok) {
+        throw new Error('Error al crear la lista')
+      }
+
+      const result = await response.json()
+      console.log('Lista creada exitosamente:', result)
+      
+      // Cerrar modal y limpiar formulario
+      onClose()
+    } catch (error) {
+      console.error('Error al crear lista:', error)
+      alert('Error al crear la lista. Por favor, inténtalo de nuevo.')
+    } finally {
+      setLoading(false)
+    }
   }
 
   const handleInputChange = (field: string, value: string) => {
@@ -221,15 +294,17 @@ const CreateListModal = ({
             <button 
               type="button"
               onClick={onClose}
-              className="flex-1 rounded-2xl bg-slate-800 py-3 px-4 font-medium text-slate-300 hover:bg-slate-700 transition-colors"
+              disabled={loading}
+              className="flex-1 rounded-2xl bg-slate-800 py-3 px-4 font-medium text-slate-300 hover:bg-slate-700 transition-colors disabled:opacity-50"
             >
               Cancelar
             </button>
             <button 
               type="submit"
-              className="flex-1 rounded-2xl bg-gradient-to-r from-blue-600 to-purple-600 py-3 px-4 font-medium text-white hover:from-blue-700 hover:to-purple-700 transition-all transform hover:scale-105"
+              disabled={loading}
+              className="flex-1 rounded-2xl bg-gradient-to-r from-blue-600 to-purple-600 py-3 px-4 font-medium text-white hover:from-blue-700 hover:to-purple-700 transition-all transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
             >
-              Crear
+              {loading ? 'Creando...' : 'Crear'}
             </button>
           </div>
         </form>
