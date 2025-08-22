@@ -10,8 +10,10 @@ import {
   ShoppingBag,
   Package,
   ChevronDown,
-  ChevronUp
+  ChevronUp,
+  List
 } from 'lucide-react'
+import { urlFor } from '@/lib/sanity'
 
 // Tipos para los formularios
 interface ProductFormData {
@@ -21,6 +23,7 @@ interface ProductFormData {
   originalPrice: string;
   stripePriceId: string;
   category: string;
+  image: File | null;
   file: File | null;
 }
 
@@ -48,16 +51,68 @@ const CreateProductModal = ({
     setLoading(true)
 
     try {
+      let imageAsset = null
+      let fileAsset = null
+
+      // Subir imagen si existe
+      if (productForm.image) {
+        const imageFormData = new FormData()
+        imageFormData.append('file', productForm.image)
+        const imageResponse = await fetch('/api/upload', {
+          method: 'POST',
+          body: imageFormData,
+        })
+        if (imageResponse.ok) {
+          imageAsset = await imageResponse.json()
+        }
+      }
+
+      // Subir archivo PDF si existe
+      if (productForm.file) {
+        const fileFormData = new FormData()
+        fileFormData.append('file', productForm.file)
+        const fileResponse = await fetch('/api/upload', {
+          method: 'POST',
+          body: fileFormData,
+        })
+        if (fileResponse.ok) {
+          fileAsset = await fileResponse.json()
+        }
+      }
+
       // Preparar datos para enviar
       const productData = {
         title: productForm.title,
+        slug: {
+          _type: 'slug',
+          current: productForm.title.toLowerCase()
+            .replace(/[^\w\s-]/g, '')
+            .replace(/\s+/g, '-')
+            .trim()
+        },
         description: productForm.description,
         price: parseFloat(productForm.price),
         originalPrice: productForm.originalPrice ? parseFloat(productForm.originalPrice) : undefined,
         stripePriceId: productForm.stripePriceId,
         category: productForm.category,
-        type: productForm.category === 'Libro' ? 'digital' : 'service',
-        // TODO: Implementar subida de archivo PDF si es necesario
+        ...(imageAsset && {
+          image: {
+            _type: 'image',
+            asset: {
+              _type: 'reference',
+              _ref: imageAsset._id
+            }
+          }
+        }),
+        ...(fileAsset && {
+          pdfFile: {
+            _type: 'file',
+            asset: {
+              _type: 'reference',
+              _ref: fileAsset._id
+            }
+          }
+        })
       }
 
       const response = await fetch('/api/products', {
@@ -75,7 +130,8 @@ const CreateProductModal = ({
       const result = await response.json()
       console.log('Producto creado exitosamente:', result)
       
-      // Cerrar modal y limpiar formulario
+      // Recargar página para mostrar el nuevo producto
+      window.location.reload()
       onClose()
     } catch (error) {
       console.error('Error al crear producto:', error)
@@ -142,6 +198,24 @@ const CreateProductModal = ({
             <option value="Libro">Libro</option>
             <option value="Servicios">Servicios</option>
           </select>
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-slate-300">Imagen del producto</label>
+            <input 
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                const file = e.target.files?.[0]
+                if (file) {
+                  setProductForm(prev => ({ ...prev, image: file }))
+                }
+              }}
+              className="w-full rounded-2xl border border-slate-600 bg-slate-800 p-4 text-white file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-medium file:bg-blue-600 file:text-white hover:file:bg-blue-700 file:cursor-pointer"
+              type="file"
+              accept="image/*"
+              required
+            />
+            {productForm.image && (
+              <p className="text-xs text-green-400">Imagen seleccionada: {productForm.image.name}</p>
+            )}
+          </div>
           {productForm.category === 'Libro' && (
             <div className="space-y-2">
               <label className="block text-sm font-medium text-slate-300">Archivo PDF del libro</label>
@@ -201,13 +275,42 @@ const CreateListModal = ({
     setLoading(true)
 
     try {
+      let imageAsset = null
+
+      // Subir imagen si existe
+      if (listForm.image) {
+        const imageFormData = new FormData()
+        imageFormData.append('file', listForm.image)
+        const imageResponse = await fetch('/api/upload', {
+          method: 'POST',
+          body: imageFormData,
+        })
+        if (imageResponse.ok) {
+          imageAsset = await imageResponse.json()
+        }
+      }
+
       // Preparar datos para enviar
       const listData = {
         title: listForm.title,
+        slug: {
+          _type: 'slug',
+          current: listForm.title.toLowerCase()
+            .replace(/[^\w\s-]/g, '') // Eliminar caracteres especiales
+            .replace(/\s+/g, '-')     // Reemplazar espacios por guiones
+            .trim()
+        },
         category: listForm.category,
         url: listForm.url,
-        // TODO: Implementar subida de imagen si es necesario
-        order: 0, // Por defecto
+        ...(imageAsset && {
+          image: {
+            _type: 'image',
+            asset: {
+              _type: 'reference',
+              _ref: imageAsset._id
+            }
+          }
+        })
       }
 
       const response = await fetch('/api/amazon-lists', {
@@ -225,7 +328,8 @@ const CreateListModal = ({
       const result = await response.json()
       console.log('Lista creada exitosamente:', result)
       
-      // Cerrar modal y limpiar formulario
+      // Recargar página para mostrar la nueva lista
+      window.location.reload()
       onClose()
     } catch (error) {
       console.error('Error al crear lista:', error)
@@ -337,6 +441,7 @@ export default function AdminPage() {
     originalPrice: '',
     stripePriceId: '',
     category: 'Asesoria',
+    image: null,
     file: null
   })
   
@@ -357,6 +462,11 @@ export default function AdminPage() {
   const [ordersLoading, setOrdersLoading] = useState(true)
   const [ordersError, setOrdersError] = useState(null)
   const [orderStatusFilter, setOrderStatusFilter] = useState('all')
+  
+  // --- Estados para listas de Amazon ---
+  const [amazonLists, setAmazonLists] = useState<any[]>([])
+  const [listsLoading, setListsLoading] = useState(true)
+  const [listsError, setListsError] = useState(null)
 
   // --- Hook para cargar productos desde la API ---
   useEffect(() => {
@@ -402,6 +512,29 @@ export default function AdminPage() {
     };
 
     fetchSuccessfulSales();
+  }, []);
+  
+  // --- Hook para cargar listas de Amazon ---
+  useEffect(() => {
+    const fetchAmazonLists = async () => {
+      setListsLoading(true);
+      setListsError(null);
+      try {
+        const response = await fetch('/api/amazon-lists');
+        if (!response.ok) {
+          throw new Error('Error al obtener las listas');
+        }
+        const data = await response.json();
+        setAmazonLists(data);
+      } catch (err: any) {
+        setListsError(err.message);
+        console.error(err);
+      } finally {
+        setListsLoading(false);
+      }
+    };
+
+    fetchAmazonLists();
   }, []);
 
   // --- Hook para cargar estadísticas del dashboard ---
@@ -763,6 +896,53 @@ export default function AdminPage() {
             </div>
           )}
 
+          {/* --- BLOQUE DE LISTAS DE AMAZON --- */}
+          {activeView === 'lists' && (
+            <div>
+              <h3 className="mb-6 font-semibold text-white text-lg">Listas de Amazon</h3>
+              {listsLoading ? (
+                <p className="text-center text-slate-400">Cargando listas...</p>
+              ) : listsError ? (
+                <p className="text-center text-red-400">{listsError}</p>
+              ) : amazonLists.length > 0 ? (
+                <div className="space-y-4">
+                  {amazonLists.map((list) => (
+                    <div 
+                      key={list._id} 
+                      className="flex rounded-2xl bg-slate-800/80 border border-slate-700/50 hover:bg-slate-800 transition-all overflow-hidden h-16"
+                    >
+                      {/* 30% para imagen */}
+                      <div className="w-3/12 p-1">
+                        {list.image ? (
+                          <img 
+                            src={list.image.asset ? urlFor(list.image).url() : list.image} 
+                            alt={list.title}
+                            className="w-full h-full object-cover rounded-xl"
+                            style={{ padding: '3%' }}
+                          />
+                        ) : (
+                          <div className="w-full h-full bg-slate-700 rounded-xl flex items-center justify-center" style={{ margin: '3%', width: '94%', height: '94%' }}>
+                            <List size={16} className="text-slate-500" />
+                          </div>
+                        )}
+                      </div>
+                      {/* 70% para título */}
+                      <div className="w-9/12 p-3 flex items-center">
+                        <p className="font-medium text-white text-sm truncate">{list.title}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="py-12 text-center text-slate-400">
+                  <List size={56} className="mx-auto mb-4 opacity-50" />
+                  <p className="text-lg">No hay listas</p>
+                  <p className="text-sm text-slate-500 mt-2">Crea tu primera lista usando el botón de arriba</p>
+                </div>
+              )}
+            </div>
+          )}
+
           {/* --- BLOQUE DE PRODUCTOS MODIFICADO --- */}
           {activeView === 'products' && (
             <div>
@@ -776,13 +956,29 @@ export default function AdminPage() {
                   {products.map((product) => (
                     <div 
                       key={product._id} 
-                      className="flex items-center justify-between rounded-2xl bg-slate-800/80 p-4 border border-slate-700/50 hover:bg-slate-800 transition-all"
+                      className="flex rounded-2xl bg-slate-800/80 border border-slate-700/50 hover:bg-slate-800 transition-all overflow-hidden h-24"
                     >
-                      <div className="flex-1 pr-4">
-                        <p className="font-medium text-white truncate">{product.title}</p>
-                        <p className="text-sm text-slate-400 truncate">{product.description}</p>
+                      {/* 80% para imagen */}
+                      <div className="w-4/5 p-1">
+                        {product.image ? (
+                          <img 
+                            src={product.image.asset ? urlFor(product.image).url() : product.image} 
+                            alt={product.title}
+                            className="w-full h-full object-cover rounded-xl"
+                            style={{ padding: '3%' }}
+                          />
+                        ) : (
+                          <div className="w-full h-full bg-slate-700 rounded-xl flex items-center justify-center" style={{ margin: '3%', width: '94%', height: '94%' }}>
+                            <Package size={20} className="text-slate-500" />
+                          </div>
+                        )}
                       </div>
-                      <p className="font-semibold text-lg text-white">${product.price.toFixed(2)}</p>
+                      {/* 20% para título, descripción y precio */}
+                      <div className="w-1/5 p-2 flex flex-col justify-center">
+                        <p className="font-medium text-white text-xs truncate mb-1">{product.title}</p>
+                        <p className="text-xs text-slate-400 truncate mb-1">{product.description}</p>
+                        <p className="font-semibold text-xs text-white">€{product.price?.toFixed(2) || '0.00'}</p>
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -869,7 +1065,7 @@ export default function AdminPage() {
 
       {/* Navegación inferior */}
       <div className="fixed bottom-0 left-0 right-0 border-t border-slate-700/50 bg-slate-900/95 backdrop-blur-md">
-        <div className="flex items-center justify-between px-8 py-4">
+        <div className="flex items-center justify-around px-4 py-4">
           <button
             onClick={() => setActiveView('dashboard')}
             className={`flex flex-col items-center gap-1 transition-all ${
@@ -878,7 +1074,7 @@ export default function AdminPage() {
                 : 'text-slate-500 hover:text-slate-300'
             }`}
           >
-            <BarChart3 size={24} />
+            <BarChart3 size={20} />
             <span className="text-xs font-medium">Dashboard</span>
           </button>
           <button
@@ -889,8 +1085,19 @@ export default function AdminPage() {
                 : 'text-slate-500 hover:text-slate-300'
             }`}
           >
-            <Package size={24} />
+            <Package size={20} />
             <span className="text-xs font-medium">Productos</span>
+          </button>
+          <button
+            onClick={() => setActiveView('lists')}
+            className={`flex flex-col items-center gap-1 transition-all ${
+              activeView === 'lists' 
+                ? 'text-white scale-105' 
+                : 'text-slate-500 hover:text-slate-300'
+            }`}
+          >
+            <List size={20} />
+            <span className="text-xs font-medium">Listas</span>
           </button>
           <button
             onClick={() => setActiveView('orders')}
@@ -900,7 +1107,7 @@ export default function AdminPage() {
                 : 'text-slate-500 hover:text-slate-300'
             }`}
           >
-            <ShoppingBag size={24} />
+            <ShoppingBag size={20} />
             <span className="text-xs font-medium">Pedidos</span>
           </button>
         </div>
@@ -920,6 +1127,7 @@ export default function AdminPage() {
               originalPrice: '',
               stripePriceId: '',
               category: 'Asesoria',
+              image: null,
               file: null
             })
           }} 
