@@ -958,8 +958,8 @@ export default function AdminPage() {
                       key={product._id} 
                       className="flex rounded-2xl bg-slate-800/80 border border-slate-700/50 hover:bg-slate-800 transition-all overflow-hidden h-24"
                     >
-                      {/* 80% para imagen */}
-                      <div className="w-4/5 p-1">
+                      {/* 50% para imagen */}
+                      <div className="w-1/2 p-1">
                         {product.image ? (
                           <img 
                             src={product.image} 
@@ -973,8 +973,8 @@ export default function AdminPage() {
                           </div>
                         )}
                       </div>
-                      {/* 20% para título, descripción y precio */}
-                      <div className="w-1/5 p-2 flex flex-col justify-center">
+                      {/* 50% para título, descripción y precio */}
+                      <div className="w-1/2 p-2 flex flex-col justify-center">
                         <p className="font-medium text-white text-xs truncate mb-1">{product.title}</p>
                         <p className="text-xs text-slate-400 truncate mb-1">{product.description}</p>
                         <p className="font-semibold text-xs text-white">€{product.price?.toFixed(2) || '0.00'}</p>
