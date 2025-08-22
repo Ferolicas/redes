@@ -170,9 +170,11 @@ export default function PurchaseModal({ product, onClose }: PurchaseModalProps) 
           {/* Description Section */}
           <div className="p-4 border-b border-white/10">
             <h3 className="text-sm font-semibold text-white/90 mb-3">Descripción</h3>
-            <p className="text-white/70 text-sm mb-4 leading-relaxed">
-              {product.description}
-            </p>
+            <div className="text-white/70 text-sm mb-4 leading-relaxed max-h-40 overflow-y-auto scrollbar-thin scrollbar-thumb-white/20 scrollbar-track-transparent">
+              <p className="whitespace-pre-wrap">
+                {product.description}
+              </p>
+            </div>
 
             {/* Qué incluye */}
             {product.includes && product.includes.length > 0 && (

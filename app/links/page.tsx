@@ -142,9 +142,11 @@ export default function LinksPage() {
                     <h3 className="text-sm sm:text-base font-semibold text-white mb-1 line-clamp-2 leading-tight">
                       {product.title}
                     </h3>
-                    <p className="text-white/70 text-xs mb-2 line-clamp-2 flex-1 leading-tight">
-                      {product.description}
-                    </p>
+                    <div className="text-white/70 text-xs mb-2 flex-1 leading-tight max-h-20 overflow-y-auto scrollbar-thin scrollbar-thumb-white/20 scrollbar-track-transparent">
+                      <p className="whitespace-pre-wrap">
+                        {product.description}
+                      </p>
+                    </div>
                     <div className="flex items-end justify-between">
                       <div className="text-left">
                         {product.originalPrice && product.originalPrice > product.price && (

@@ -972,7 +972,11 @@ export default function AdminPage() {
                         )}
                         <div className="flex-1">
                           <p className="font-medium text-white text-sm truncate mb-1">{product.title}</p>
-                          <p className="text-xs text-slate-400 line-clamp-2 mb-2">{product.description}</p>
+                          <div className="text-xs text-slate-400 mb-2 max-h-16 overflow-y-auto scrollbar-thin scrollbar-thumb-slate-600 scrollbar-track-transparent">
+                            <p className="whitespace-pre-wrap">
+                              {product.description}
+                            </p>
+                          </div>
                           <p className="font-semibold text-sm text-white">€{product.price?.toFixed(2) || '0.00'}</p>
                         </div>
                       </div>
