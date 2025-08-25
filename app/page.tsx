@@ -45,7 +45,7 @@ function HomePageContent() {
 
   const handleProductsScroll = (direction: 'up' | 'down') => {
     const newOffset = direction === 'down' 
-      ? Math.min(productsOffset + 2, Math.max(0, products.length - 4))
+      ? Math.min(productsOffset + 2, Math.max(0, products.length - 2))
       : Math.max(0, productsOffset - 2)
     setProductsOffset(newOffset)
   }
@@ -134,7 +134,7 @@ function HomePageContent() {
     }
   }, [productId, products])
 
-  const visibleProducts = products.slice(productsOffset, productsOffset + 4)
+  const visibleProducts = products.slice(productsOffset, productsOffset + 2)
 
   return (
     <div className="h-screen bg-gradient-to-br from-blue-600 via-purple-600 to-blue-800 text-white font-['Inter'] overflow-hidden relative">
@@ -142,44 +142,44 @@ function HomePageContent() {
       <div className="h-full w-full lg:flex lg:items-center lg:justify-center lg:bg-black/20">
         <div className="h-full w-full lg:max-w-md lg:h-full bg-gradient-to-br from-blue-600 via-purple-600 to-blue-800 lg:shadow-2xl relative overflow-hidden">
       {/* Floating Social Media Buttons */}
-      <div className="fixed top-4 right-4 lg:absolute lg:top-4 lg:right-4 z-50 flex flex-col gap-2">
+      <div className="fixed top-4 right-0 lg:absolute lg:top-4 lg:right-0 z-50 flex flex-col">
         <a
           href="https://www.youtube.com/@planetaketo"
           target="_blank"
           rel="noopener noreferrer"
-          className="w-12 h-12 bg-red-600 hover:bg-red-700 rounded-full flex items-center justify-center transition-all hover:scale-110 shadow-lg"
+          className="w-8 h-8 bg-red-600 hover:bg-red-700 flex items-center justify-center transition-all hover:scale-110 shadow-lg rounded-l-lg border-l border-t border-b border-red-700"
         >
-          <Youtube size={20} className="text-white" />
+          <Youtube size={14} className="text-white" />
         </a>
         <a
           href="https://www.instagram.com/planetaketorecetas/"
           target="_blank"
           rel="noopener noreferrer"
-          className="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 rounded-full flex items-center justify-center transition-all hover:scale-110 shadow-lg"
+          className="w-8 h-8 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 flex items-center justify-center transition-all hover:scale-110 shadow-lg rounded-l-lg border-l border-purple-600"
         >
-          <Instagram size={20} className="text-white" />
+          <Instagram size={14} className="text-white" />
         </a>
         <a
           href="https://www.tiktok.com/@planetaketo"
           target="_blank"
           rel="noopener noreferrer"
-          className="w-12 h-12 bg-gray-900 hover:bg-black rounded-full flex items-center justify-center transition-all hover:scale-110 shadow-lg"
+          className="w-8 h-8 bg-gray-900 hover:bg-black flex items-center justify-center transition-all hover:scale-110 shadow-lg rounded-l-lg border-l border-gray-700"
         >
-          <MessageCircle size={20} className="text-white" />
+          <MessageCircle size={14} className="text-white" />
         </a>
         <a
           href="https://www.facebook.com/planetaketo"
           target="_blank"
           rel="noopener noreferrer"
-          className="w-12 h-12 bg-blue-600 hover:bg-blue-700 rounded-full flex items-center justify-center transition-all hover:scale-110 shadow-lg"
+          className="w-8 h-8 bg-blue-600 hover:bg-blue-700 flex items-center justify-center transition-all hover:scale-110 shadow-lg rounded-l-lg border-l border-blue-700"
         >
-          <Facebook size={20} className="text-white" />
+          <Facebook size={14} className="text-white" />
         </a>
         <a
           href="mailto:info@planetaketo.es"
-          className="w-12 h-12 bg-green-600 hover:bg-green-700 rounded-full flex items-center justify-center transition-all hover:scale-110 shadow-lg"
+          className="w-8 h-8 bg-green-600 hover:bg-green-700 flex items-center justify-center transition-all hover:scale-110 shadow-lg rounded-l-lg border-l border-b border-green-700"
         >
-          <Mail size={20} className="text-white" />
+          <Mail size={14} className="text-white" />
         </a>
       </div>
       
@@ -238,7 +238,7 @@ function HomePageContent() {
             </button>
             <button 
               onClick={() => handleProductsScroll('down')}
-              disabled={productsOffset >= products.length - 4}
+              disabled={productsOffset >= products.length - 2}
               className="p-2 rounded-full bg-white/20 backdrop-blur-md border border-white/30 hover:bg-white/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <ChevronRight size={16} />
@@ -246,59 +246,67 @@ function HomePageContent() {
           </div>
         </div>
         
-        <div className="h-[calc(100%-48px)]">
-          <div className="grid grid-cols-2 gap-3 h-full">
+        <div className="h-[calc(100%-48px)] overflow-y-auto scrollbar-thin scrollbar-thumb-white/20 scrollbar-track-transparent">
+          <div className="grid grid-cols-1 gap-3">
             {visibleProducts.map((product: Product, index) => (
               <div 
                 key={product._id}
-                className="h-full"
+                className="h-auto"
               >
                 <div 
                   onClick={() => handleProductClick(product._id, product)}
-                  className="h-full rounded-xl bg-white/10 backdrop-blur-md border border-white/20 p-3 hover:bg-white/20 transition-all cursor-pointer group"
+                  className="rounded-xl bg-white/10 backdrop-blur-md border border-white/20 p-3 hover:bg-white/20 transition-all cursor-pointer group"
                 >
-                  <div className="h-full flex flex-col">
-                    {product.image && (
-                      <img 
-                        src={product.image} 
-                        alt={product.title}
-                        className="w-full h-32 sm:h-36 object-cover rounded-lg mb-2 group-hover:scale-105 transition-transform"
-                      />
-                    )}
-                    <h3 className="text-sm sm:text-base font-semibold text-white mb-1 line-clamp-2 leading-tight">
-                      {product.title}
-                    </h3>
-                    <div className="text-white/70 text-xs mb-2 flex-1 leading-tight max-h-20 overflow-y-auto scrollbar-thin scrollbar-thumb-white/20 scrollbar-track-transparent">
-                      <p className="whitespace-pre-wrap">
-                        {product.description}
-                      </p>
+                  <div className="flex gap-3">
+                    {/* Imagen - 30% */}
+                    <div className="w-[30%] flex-shrink-0">
+                      {product.image && (
+                        <img 
+                          src={product.image} 
+                          alt={product.title}
+                          className="w-full aspect-square object-cover rounded-lg group-hover:scale-105 transition-transform"
+                        />
+                      )}
                     </div>
-                    <div className="flex items-end justify-between">
-                      <div className="text-left">
-                        {product.originalPrice && product.originalPrice > product.price && (
-                          <>
-                            <span className="text-white/50 line-through text-xs block">
-                              €{product.originalPrice}
-                            </span>
-                            <div className="flex items-center gap-2">
-                              <span className="text-white font-bold text-sm sm:text-base">
-                                €{product.price}
-                              </span>
-                              <span className="text-green-400 text-xs font-medium">
-                                ({Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)}% off)
-                              </span>
-                            </div>
-                          </>
-                        )}
-                        {(!product.originalPrice || product.originalPrice <= product.price) && (
-                          <span className="text-white font-bold text-sm sm:text-base">
-                            €{product.price}
-                          </span>
-                        )}
+                    
+                    {/* Contenido - 70% */}
+                    <div className="w-[70%] flex flex-col justify-between">
+                      <div>
+                        <h3 className="text-sm sm:text-base font-semibold text-white mb-1 line-clamp-2 leading-tight">
+                          {product.title}
+                        </h3>
+                        <div className="text-white/70 text-xs mb-2 line-clamp-3 leading-tight">
+                          <p>{product.description}</p>
+                        </div>
                       </div>
-                      <span className="px-2 py-1 rounded-full bg-white/20 text-white/80 text-xs">
-                        {product.category}
-                      </span>
+                      
+                      <div className="flex items-end justify-between">
+                        <div className="text-left">
+                          {product.originalPrice && product.originalPrice > product.price && (
+                            <>
+                              <span className="text-white/50 line-through text-xs block">
+                                €{product.originalPrice}
+                              </span>
+                              <div className="flex items-center gap-2">
+                                <span className="text-white font-bold text-sm sm:text-base">
+                                  €{product.price}
+                                </span>
+                                <span className="text-green-400 text-xs font-medium">
+                                  ({Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)}% off)
+                                </span>
+                              </div>
+                            </>
+                          )}
+                          {(!product.originalPrice || product.originalPrice <= product.price) && (
+                            <span className="text-white font-bold text-sm sm:text-base">
+                              €{product.price}
+                            </span>
+                          )}
+                        </div>
+                        <span className="px-2 py-1 rounded-full bg-white/20 text-white/80 text-xs">
+                          {product.category}
+                        </span>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -333,31 +341,31 @@ function HomePageContent() {
 
         <div 
           ref={amazonScrollRef}
-          className="flex gap-3 overflow-x-auto h-[calc(100%-88px)] pb-2 scrollbar-hide"
+          className="flex gap-3 overflow-x-auto lg:overflow-x-visible lg:grid lg:grid-cols-2 lg:gap-2 h-[calc(100%-88px)] pb-2 scrollbar-hide"
           style={{ scrollSnapType: 'x mandatory' }}
         >
           {amazonLists.map((list: AmazonList) => (
             <div 
               key={list._id}
-              className="flex-none w-64 sm:w-72 h-full"
+              className="flex-none w-64 sm:w-72 lg:w-full h-full lg:h-auto"
               style={{ scrollSnapAlign: 'start' }}
             >
               <div
                 onClick={() => handleAmazonClick(list._id, list.url)}
-                className="block h-full rounded-xl bg-white/10 backdrop-blur-md border border-white/20 p-3 hover:bg-white/20 transition-all group cursor-pointer"
+                className="block h-full lg:h-auto rounded-xl bg-white/10 backdrop-blur-md border border-white/20 p-3 hover:bg-white/20 transition-all group cursor-pointer"
               >
-                <div className="h-full flex gap-3">
+                <div className="h-full lg:h-auto flex gap-3">
                   {/* 30% para imagen a la izquierda */}
                   <div className="w-[30%] flex-shrink-0">
                     {list.image ? (
                       <img 
                         src={list.image} 
                         alt={list.title}
-                        className="w-full h-full object-cover rounded-lg group-hover:scale-105 transition-transform"
+                        className="w-full h-full lg:h-auto lg:aspect-square object-cover rounded-lg group-hover:scale-105 transition-transform"
                         style={{ padding: '3%' }}
                       />
                     ) : (
-                      <div className="w-full h-full bg-white/10 rounded-lg flex items-center justify-center">
+                      <div className="w-full h-full lg:h-auto lg:aspect-square bg-white/10 rounded-lg flex items-center justify-center">
                         <ExternalLink size={20} className="text-white/50" />
                       </div>
                     )}
@@ -365,7 +373,7 @@ function HomePageContent() {
                   
                   {/* 70% para contenido a la derecha */}
                   <div className="w-[70%] flex flex-col justify-between">
-                    <h3 className="text-sm sm:text-base font-semibold text-white mb-2 line-clamp-3 leading-tight">
+                    <h3 className="text-sm sm:text-base font-semibold text-white mb-2 line-clamp-3 lg:line-clamp-2 leading-tight">
                       {list.title}
                     </h3>
                     <div className="flex items-center justify-between mt-auto">
