@@ -137,8 +137,8 @@ function HomePageContent() {
   return (
     <div className="h-screen bg-gradient-to-br from-blue-600 via-purple-600 to-blue-800 text-white font-['Inter'] overflow-hidden relative">
       {/* Desktop Container - Centers the mobile view */}
-      <div className="h-full w-full lg:flex lg:items-center lg:justify-center lg:bg-black/20">
-        <div className="h-full w-full lg:max-w-md lg:h-full bg-gradient-to-br from-blue-600 via-purple-600 to-blue-800 lg:shadow-2xl relative overflow-hidden">
+      <div className="h-full w-full lg:flex lg:items-center lg:justify-center lg:bg-black/20 lg:p-4">
+        <div className="h-full w-full lg:max-w-lg lg:max-h-[95vh] lg:h-auto bg-gradient-to-br from-blue-600 via-purple-600 to-blue-800 lg:shadow-2xl lg:rounded-2xl relative overflow-hidden">
       {/* Floating Social Media Buttons */}
       <div className="fixed top-4 right-0 lg:absolute lg:top-4 lg:right-0 z-50 flex flex-col">
         <a
@@ -211,7 +211,7 @@ function HomePageContent() {
               {webElements?.subtitle || '¡Recetas Keto para todos!'}
             </p>
             {webElements?.description && (
-              <p className="text-white/70 text-xs line-clamp-2 leading-tight">
+              <p className="text-white/70 text-xs line-clamp-2 leading-tight whitespace-pre-line">
                 {webElements.description}
               </p>
             )}
@@ -324,31 +324,31 @@ function HomePageContent() {
 
         <div 
           ref={amazonScrollRef}
-          className="flex gap-3 overflow-x-auto lg:overflow-y-auto lg:overflow-x-hidden lg:grid lg:grid-cols-1 lg:gap-2 h-[calc(100%-88px)] pb-2 scrollbar-hide lg:scrollbar-thin lg:scrollbar-thumb-white/20 lg:scrollbar-track-transparent"
+          className="flex gap-3 overflow-x-auto lg:overflow-x-auto lg:overflow-y-hidden h-[calc(100%-88px)] pb-2 scrollbar-hide"
           style={{ scrollSnapType: 'x mandatory' }}
         >
           {amazonLists.map((list: AmazonList) => (
             <div 
               key={list._id}
-              className="flex-none w-64 sm:w-72 lg:w-full h-full lg:h-auto"
+              className="flex-none w-64 sm:w-72 lg:w-80 h-full"
               style={{ scrollSnapAlign: 'start' }}
             >
               <div
                 onClick={() => handleAmazonClick(list._id, list.url)}
-                className="block h-full lg:h-auto rounded-xl bg-white/10 backdrop-blur-md border border-white/20 p-3 hover:bg-white/20 transition-all group cursor-pointer"
+                className="block h-full rounded-xl bg-white/10 backdrop-blur-md border border-white/20 p-3 hover:bg-white/20 transition-all group cursor-pointer"
               >
-                <div className="h-full lg:h-auto flex gap-3">
+                <div className="h-full flex gap-3">
                   {/* 30% para imagen a la izquierda */}
                   <div className="w-[30%] flex-shrink-0">
                     {list.image ? (
                       <img 
                         src={list.image} 
                         alt={list.title}
-                        className="w-full h-full lg:h-auto lg:aspect-square object-cover rounded-lg group-hover:scale-105 transition-transform"
+                        className="w-full h-full object-cover rounded-lg group-hover:scale-105 transition-transform"
                         style={{ padding: '3%' }}
                       />
                     ) : (
-                      <div className="w-full h-full lg:h-auto lg:aspect-square bg-white/10 rounded-lg flex items-center justify-center">
+                      <div className="w-full h-full bg-white/10 rounded-lg flex items-center justify-center">
                         <ExternalLink size={20} className="text-white/50" />
                       </div>
                     )}
@@ -356,7 +356,7 @@ function HomePageContent() {
                   
                   {/* 70% para contenido a la derecha */}
                   <div className="w-[70%] flex flex-col justify-between">
-                    <h3 className="text-sm sm:text-base font-semibold text-white mb-2 line-clamp-3 lg:line-clamp-2 leading-tight">
+                    <h3 className="text-sm sm:text-base font-semibold text-white mb-2 line-clamp-3 leading-tight">
                       {list.title}
                     </h3>
                     <div className="flex items-center justify-between mt-auto">
