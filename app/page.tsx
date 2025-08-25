@@ -240,14 +240,14 @@ function HomePageContent() {
             >
               <div 
                 onClick={() => handleProductClick(product._id, product)}
-                className="h-full rounded-xl bg-white/10 backdrop-blur-md border border-white/20 p-3 hover:bg-white/20 transition-all cursor-pointer group"
+                className="h-full rounded-xl bg-white/10 backdrop-blur-md border border-white/20 p-3 lg:p-2 hover:bg-white/20 transition-all cursor-pointer group"
               >
                 <div className="h-full flex flex-col">
                   {product.image && (
                     <img 
                       src={product.image} 
                       alt={product.title}
-                      className="w-full h-32 sm:h-36 object-cover rounded-lg mb-2 group-hover:scale-105 transition-transform"
+                      className="w-full h-32 sm:h-36 lg:h-24 object-cover rounded-lg mb-2 group-hover:scale-105 transition-transform"
                     />
                   )}
                   {product.featured && (
@@ -337,7 +337,7 @@ function HomePageContent() {
             >
               <div
                 onClick={() => handleAmazonClick(list._id, list.url)}
-                className="block h-full rounded-xl bg-white/10 backdrop-blur-md border border-white/20 p-3 hover:bg-white/20 transition-all group cursor-pointer"
+                className="block h-full rounded-xl bg-white/10 backdrop-blur-md border border-white/20 p-2 lg:p-3 hover:bg-white/20 transition-all group cursor-pointer"
               >
                 <div className="h-full flex gap-3">
                   {/* 30% para imagen a la izquierda */}
@@ -358,7 +358,7 @@ function HomePageContent() {
                   
                   {/* 70% para contenido a la derecha */}
                   <div className="w-[70%] flex flex-col justify-between">
-                    <h3 className="text-sm sm:text-base lg:text-sm font-semibold text-white mb-2 line-clamp-3 leading-tight">
+                    <h3 className="text-sm sm:text-base lg:text-sm font-semibold text-white mb-1 line-clamp-4 leading-tight">
                       {list.title}
                     </h3>
                     <div className="flex items-center justify-between mt-auto">
