@@ -10,6 +10,7 @@ export interface Product {
   category: string
   type: 'digital' | 'service'
   fileUrl?: string
+  featured?: boolean
   createdAt: string
 }
 
