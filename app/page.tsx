@@ -4,6 +4,7 @@ import React, { Suspense } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { useState, useRef, useEffect } from 'react'
 import { useSearchParams } from 'next/navigation'
+import Script from 'next/script'
 import { ShoppingBag, ExternalLink, Sparkles, ChevronLeft, ChevronRight, Youtube, Instagram, MessageCircle, Facebook, Mail } from 'lucide-react'
 import ProductCard from '../components/ProductCard'
 import AmazonCard from '../components/AmazonCard'
@@ -184,8 +185,8 @@ function HomePageContent() {
       {/* Top AdSense Ad Space */}
       <div className="w-full h-[60px] flex items-center justify-center border-b border-white/10">
         <div className="w-[320px] h-[50px] flex items-center justify-center">
-          <script type="text/javascript" dangerouslySetInnerHTML={{
-            __html: `
+          <Script id="top-banner-config" strategy="lazyOnload">
+            {`
               atOptions = {
                 'key' : '1fb4c7e89e9afdaf65fe05041740b21e',
                 'format' : 'iframe',
@@ -193,9 +194,12 @@ function HomePageContent() {
                 'width' : 320,
                 'params' : {}
               };
-            `
-          }} />
-          <script type="text/javascript" src="//www.highperformanceformat.com/1fb4c7e89e9afdaf65fe05041740b21e/invoke.js"></script>
+            `}
+          </Script>
+          <Script 
+            src="//www.highperformanceformat.com/1fb4c7e89e9afdaf65fe05041740b21e/invoke.js"
+            strategy="lazyOnload"
+          />
         </div>
       </div>
       
@@ -399,7 +403,11 @@ function HomePageContent() {
       {/* Bottom AdSense Ad Space */}
       <div className="w-full h-[60px] flex items-center justify-center border-t border-white/10">
         <div className="w-[320px] h-[50px] flex items-center justify-center">
-          <script async data-cfasync="false" src="//pl27507724.profitableratecpm.com/656d60aa1292caa70d9528146f9a8fb1/invoke.js"></script>
+          <Script 
+            src="//pl27507724.profitableratecpm.com/656d60aa1292caa70d9528146f9a8fb1/invoke.js"
+            strategy="lazyOnload"
+            data-cfasync="false"
+          />
           <div id="container-656d60aa1292caa70d9528146f9a8fb1"></div>
         </div>
       </div>
