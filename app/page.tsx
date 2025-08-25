@@ -136,11 +136,8 @@ function HomePageContent() {
 
   return (
     <div className="h-screen bg-gradient-to-br from-blue-600 via-purple-600 to-blue-800 text-white font-['Inter'] overflow-hidden relative">
-      {/* Desktop Container - Centers the mobile view */}
-      <div className="h-full w-full lg:flex lg:items-center lg:justify-center lg:bg-black/20 lg:p-4">
-        <div className="h-full w-full lg:max-w-lg lg:max-h-[95vh] lg:h-auto bg-gradient-to-br from-blue-600 via-purple-600 to-blue-800 lg:shadow-2xl lg:rounded-2xl relative overflow-hidden">
       {/* Floating Social Media Buttons */}
-      <div className="fixed top-4 right-0 lg:absolute lg:top-4 lg:right-0 z-50 flex flex-col">
+      <div className="fixed top-4 right-0 z-50 flex flex-col">
         <a
           href="https://www.youtube.com/@planetaketo"
           target="_blank"
@@ -324,13 +321,13 @@ function HomePageContent() {
 
         <div 
           ref={amazonScrollRef}
-          className="flex gap-3 overflow-x-auto lg:overflow-x-auto lg:overflow-y-hidden h-[calc(100%-88px)] pb-2 scrollbar-hide"
+          className="flex gap-3 overflow-x-auto h-[calc(100%-88px)] pb-2 scrollbar-hide"
           style={{ scrollSnapType: 'x mandatory' }}
         >
           {amazonLists.map((list: AmazonList) => (
             <div 
               key={list._id}
-              className="flex-none w-64 sm:w-72 lg:w-80 h-full lg:min-h-[140px]"
+              className="flex-none w-64 sm:w-72 h-full"
               style={{ scrollSnapAlign: 'start' }}
             >
               <div
@@ -397,8 +394,6 @@ function HomePageContent() {
           onClose={() => setSelectedProduct(null)}
         />
       )}
-        </div> {/* Close lg:max-w-md container */}
-      </div> {/* Close lg:flex container */}
     </div>
   )
 }
