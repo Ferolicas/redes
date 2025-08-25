@@ -265,32 +265,34 @@ function HomePageContent() {
                       {product.description}
                     </p>
                   </div>
-                  <div className="flex items-end justify-between">
-                    <div className="text-left">
-                      {product.originalPrice && product.originalPrice > product.price && (
-                        <>
-                          <span className="text-white/50 line-through text-xs block">
-                            €{product.originalPrice}
+                  <div className="flex flex-col gap-2">
+                    <div className="flex items-end justify-between">
+                      <div className="text-left flex-1">
+                        {product.originalPrice && product.originalPrice > product.price && (
+                          <>
+                            <span className="text-white/50 line-through text-xs block">
+                              €{product.originalPrice}
+                            </span>
+                            <div className="flex items-center gap-1 flex-wrap">
+                              <span className="text-white font-bold text-sm sm:text-base">
+                                €{product.price}
+                              </span>
+                              <span className="text-green-400 text-xs font-medium">
+                                ({Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)}% off)
+                              </span>
+                            </div>
+                          </>
+                        )}
+                        {(!product.originalPrice || product.originalPrice <= product.price) && (
+                          <span className="text-white font-bold text-sm sm:text-base">
+                            €{product.price}
                           </span>
-                          <div className="flex items-center gap-2">
-                            <span className="text-white font-bold text-sm sm:text-base">
-                              €{product.price}
-                            </span>
-                            <span className="text-green-400 text-xs font-medium">
-                              ({Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)}% off)
-                            </span>
-                          </div>
-                        </>
-                      )}
-                      {(!product.originalPrice || product.originalPrice <= product.price) && (
-                        <span className="text-white font-bold text-sm sm:text-base">
-                          €{product.price}
-                        </span>
-                      )}
+                        )}
+                      </div>
+                      <span className="px-2 py-1 rounded-full bg-white/20 text-white/80 text-xs ml-2">
+                        {product.category}
+                      </span>
                     </div>
-                    <span className="px-2 py-1 rounded-full bg-white/20 text-white/80 text-xs">
-                      {product.category}
-                    </span>
                   </div>
                 </div>
               </div>
@@ -300,7 +302,7 @@ function HomePageContent() {
       </div>
 
       {/* Amazon Lists Section - 24% on mobile */}
-      <div className="h-[24vh] px-4 py-3">
+      <div className="h-[24vh] lg:h-[30vh] px-4 py-3">
         <div className="flex items-center justify-between mb-3">
           <h2 className="text-lg sm:text-xl font-bold text-white flex items-center">
             <ExternalLink className="mr-2" size={18} />
@@ -356,7 +358,7 @@ function HomePageContent() {
                   
                   {/* 70% para contenido a la derecha */}
                   <div className="w-[70%] flex flex-col justify-between">
-                    <h3 className="text-sm sm:text-base lg:text-sm font-semibold text-white mb-2 line-clamp-2 leading-tight">
+                    <h3 className="text-sm sm:text-base lg:text-sm font-semibold text-white mb-2 line-clamp-3 leading-tight">
                       {list.title}
                     </h3>
                     <div className="flex items-center justify-between mt-auto">
