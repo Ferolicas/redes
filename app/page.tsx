@@ -136,8 +136,11 @@ function HomePageContent() {
 
   return (
     <div className="h-screen bg-gradient-to-br from-blue-600 via-purple-600 to-blue-800 text-white font-['Inter'] overflow-hidden relative">
+      {/* Desktop Container - Centers the mobile view */}
+      <div className="h-full w-full lg:flex lg:items-center lg:justify-center lg:bg-black/20 lg:p-4">
+        <div className="h-full w-full lg:max-w-md lg:h-[95vh] bg-gradient-to-br from-blue-600 via-purple-600 to-blue-800 lg:shadow-2xl lg:rounded-2xl relative overflow-hidden">
       {/* Floating Social Media Buttons */}
-      <div className="fixed top-4 right-0 z-50 flex flex-col">
+      <div className="fixed top-4 right-0 lg:absolute lg:top-4 lg:right-0 z-50 flex flex-col">
         <a
           href="https://www.youtube.com/@planetaketo"
           target="_blank"
@@ -353,7 +356,7 @@ function HomePageContent() {
                   
                   {/* 70% para contenido a la derecha */}
                   <div className="w-[70%] flex flex-col justify-between">
-                    <h3 className="text-sm sm:text-base font-semibold text-white mb-2 line-clamp-3 leading-tight">
+                    <h3 className="text-sm sm:text-base lg:text-sm font-semibold text-white mb-2 line-clamp-2 leading-tight">
                       {list.title}
                     </h3>
                     <div className="flex items-center justify-between mt-auto">
@@ -394,6 +397,8 @@ function HomePageContent() {
           onClose={() => setSelectedProduct(null)}
         />
       )}
+        </div> {/* Close lg:max-w-md container */}
+      </div> {/* Close lg:flex container */}
     </div>
   )
 }
