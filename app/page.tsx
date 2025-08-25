@@ -184,22 +184,26 @@ function HomePageContent() {
       
       {/* Top AdSense Ad Space */}
       <div className="w-full h-[60px] flex items-center justify-center border-b border-white/10">
-        <div className="w-[320px] h-[50px] flex items-center justify-center">
-          <Script id="top-banner-config" strategy="lazyOnload">
+        <div className="w-[320px] h-[50px] flex items-center justify-center" id="top-banner-container">
+          <Script id="top-banner-config" strategy="afterInteractive">
             {`
-              atOptions = {
-                'key' : '1fb4c7e89e9afdaf65fe05041740b21e',
-                'format' : 'iframe',
-                'height' : 50,
-                'width' : 320,
-                'params' : {}
-              };
+              (function() {
+                const topAtOptions = {
+                  'key' : '1fb4c7e89e9afdaf65fe05041740b21e',
+                  'format' : 'iframe',
+                  'height' : 50,
+                  'width' : 320,
+                  'params' : {}
+                };
+                window.atOptions = topAtOptions;
+                
+                const script = document.createElement('script');
+                script.type = 'text/javascript';
+                script.src = '//www.highperformanceformat.com/1fb4c7e89e9afdaf65fe05041740b21e/invoke.js';
+                document.getElementById('top-banner-container').appendChild(script);
+              })();
             `}
           </Script>
-          <Script 
-            src="//www.highperformanceformat.com/1fb4c7e89e9afdaf65fe05041740b21e/invoke.js"
-            strategy="lazyOnload"
-          />
         </div>
       </div>
       
