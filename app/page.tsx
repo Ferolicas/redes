@@ -182,9 +182,20 @@ function HomePageContent() {
       </div>
       
       {/* Top AdSense Ad Space */}
-      <div className="w-full h-[8vh] flex items-center justify-center border-b border-white/10">
-        <div className="w-full max-w-sm h-16 bg-white/5 rounded-lg border border-white/20 flex items-center justify-center">
-          <span className="text-white/60 text-xs">AdSense - Top Banner</span>
+      <div className="w-full h-[60px] flex items-center justify-center border-b border-white/10">
+        <div className="w-[320px] h-[50px] flex items-center justify-center">
+          <script type="text/javascript" dangerouslySetInnerHTML={{
+            __html: `
+              atOptions = {
+                'key' : '1fb4c7e89e9afdaf65fe05041740b21e',
+                'format' : 'iframe',
+                'height' : 50,
+                'width' : 320,
+                'params' : {}
+              };
+            `
+          }} />
+          <script type="text/javascript" src="//www.highperformanceformat.com/1fb4c7e89e9afdaf65fe05041740b21e/invoke.js"></script>
         </div>
       </div>
       
@@ -386,9 +397,10 @@ function HomePageContent() {
       </div>
 
       {/* Bottom AdSense Ad Space */}
-      <div className="w-full h-[8vh] flex items-center justify-center border-t border-white/10">
-        <div className="w-full max-w-sm h-16 bg-white/5 rounded-lg border border-white/20 flex items-center justify-center">
-          <span className="text-white/60 text-xs">AdSense - Bottom Banner</span>
+      <div className="w-full h-[60px] flex items-center justify-center border-t border-white/10">
+        <div className="w-[320px] h-[50px] flex items-center justify-center">
+          <script async data-cfasync="false" src="//pl27507724.profitableratecpm.com/656d60aa1292caa70d9528146f9a8fb1/invoke.js"></script>
+          <div id="container-656d60aa1292caa70d9528146f9a8fb1"></div>
         </div>
       </div>
 
