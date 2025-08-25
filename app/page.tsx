@@ -30,7 +30,13 @@ function HomePageContent() {
     queryKey: ['products'],
     queryFn: async () => {
       const res = await fetch('/api/products')
-      return res.json()
+      const data = await res.json()
+      // Ordenar productos: fijados primero, luego por fecha de creación descendente
+      return data.sort((a: Product, b: Product) => {
+        if (a.featured && !b.featured) return -1
+        if (!a.featured && b.featured) return 1
+        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      })
     },
   })
 
@@ -196,8 +202,8 @@ function HomePageContent() {
             )}
           </div>
           
-          {/* Text Content - 70% */}
-          <div className="w-[70%] min-w-0">
+          {/* Text Content - 63% (reducido 10%) */}
+          <div className="w-[63%] min-w-0">
             <h1 className="text-lg sm:text-xl font-bold text-white mb-1 line-clamp-2 leading-tight">
               {webElements?.title || 'Planeta Keto'}
             </h1>
