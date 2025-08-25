@@ -324,7 +324,7 @@ function HomePageContent() {
 
         <div 
           ref={amazonScrollRef}
-          className="flex gap-3 overflow-x-auto lg:overflow-x-visible lg:grid lg:grid-cols-2 lg:gap-2 h-[calc(100%-88px)] pb-2 scrollbar-hide"
+          className="flex gap-3 overflow-x-auto lg:overflow-y-auto lg:overflow-x-hidden lg:grid lg:grid-cols-1 lg:gap-2 h-[calc(100%-88px)] pb-2 scrollbar-hide lg:scrollbar-thin lg:scrollbar-thumb-white/20 lg:scrollbar-track-transparent"
           style={{ scrollSnapType: 'x mandatory' }}
         >
           {amazonLists.map((list: AmazonList) => (
