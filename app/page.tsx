@@ -260,8 +260,8 @@ function HomePageContent() {
                   <h3 className="text-sm sm:text-base font-semibold text-white mb-1 line-clamp-2 leading-tight">
                     {product.title}
                   </h3>
-                  <div className="text-white/70 text-xs mb-2 flex-1 leading-tight max-h-20 overflow-y-auto scrollbar-thin scrollbar-thumb-white/20 scrollbar-track-transparent">
-                    <p className="whitespace-pre-wrap">
+                  <div className="text-white/70 text-xs mb-2 flex-1 leading-tight overflow-hidden">
+                    <p className="whitespace-pre-wrap line-clamp-4">
                       {product.description}
                     </p>
                   </div>
@@ -330,7 +330,7 @@ function HomePageContent() {
           {amazonLists.map((list: AmazonList) => (
             <div 
               key={list._id}
-              className="flex-none w-64 sm:w-72 lg:w-80 h-full"
+              className="flex-none w-64 sm:w-72 lg:w-80 h-full lg:min-h-[140px]"
               style={{ scrollSnapAlign: 'start' }}
             >
               <div
