@@ -15,7 +15,6 @@ function HomePageContent() {
   const productId = searchParams.get('product')
   
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null)
-  const [productsOffset, setProductsOffset] = useState(0)
   const [listsOffset, setListsOffset] = useState(0)
   const amazonScrollRef = useRef<HTMLDivElement>(null)
 
@@ -43,12 +42,6 @@ function HomePageContent() {
     },
   })
 
-  const handleProductsScroll = (direction: 'up' | 'down') => {
-    const newOffset = direction === 'down' 
-      ? Math.min(productsOffset + 2, Math.max(0, products.length - 2))
-      : Math.max(0, productsOffset - 2)
-    setProductsOffset(newOffset)
-  }
 
   const handleAmazonScroll = (direction: 'left' | 'right') => {
     if (amazonScrollRef.current) {
@@ -134,7 +127,6 @@ function HomePageContent() {
     }
   }, [productId, products])
 
-  const visibleProducts = products.slice(productsOffset, productsOffset + 2)
 
   return (
     <div className="h-screen bg-gradient-to-br from-blue-600 via-purple-600 to-blue-800 text-white font-['Inter'] overflow-hidden relative">
@@ -228,91 +220,76 @@ function HomePageContent() {
             <ShoppingBag className="mr-2" size={18} />
             Productos
           </h2>
-          <div className="flex gap-1">
-            <button 
-              onClick={() => handleProductsScroll('up')}
-              disabled={productsOffset === 0}
-              className="p-2 rounded-full bg-white/20 backdrop-blur-md border border-white/30 hover:bg-white/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              <ChevronLeft size={16} />
-            </button>
-            <button 
-              onClick={() => handleProductsScroll('down')}
-              disabled={productsOffset >= products.length - 2}
-              className="p-2 rounded-full bg-white/20 backdrop-blur-md border border-white/30 hover:bg-white/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              <ChevronRight size={16} />
-            </button>
-          </div>
         </div>
         
-        <div className="h-[calc(100%-48px)] overflow-y-auto scrollbar-thin scrollbar-thumb-white/20 scrollbar-track-transparent">
-          <div className="grid grid-cols-1 gap-3">
-            {visibleProducts.map((product: Product, index) => (
+        <div 
+          className="flex gap-3 overflow-x-auto h-[calc(100%-48px)] pb-2 scrollbar-hide"
+          style={{ scrollSnapType: 'x mandatory' }}
+        >
+          {products.map((product: Product) => (
+            <div 
+              key={product._id}
+              className="flex-none w-64 sm:w-72 h-full"
+              style={{ scrollSnapAlign: 'start' }}
+            >
               <div 
-                key={product._id}
-                className="h-auto"
+                onClick={() => handleProductClick(product._id, product)}
+                className="h-full rounded-xl bg-white/10 backdrop-blur-md border border-white/20 p-3 hover:bg-white/20 transition-all cursor-pointer group"
               >
-                <div 
-                  onClick={() => handleProductClick(product._id, product)}
-                  className="rounded-xl bg-white/10 backdrop-blur-md border border-white/20 p-3 hover:bg-white/20 transition-all cursor-pointer group"
-                >
-                  <div className="flex gap-3">
-                    {/* Imagen - 30% */}
-                    <div className="w-[30%] flex-shrink-0">
-                      {product.image && (
-                        <img 
-                          src={product.image} 
-                          alt={product.title}
-                          className="w-full aspect-square object-cover rounded-lg group-hover:scale-105 transition-transform"
-                        />
-                      )}
+                <div className="h-full flex flex-col">
+                  {product.image && (
+                    <img 
+                      src={product.image} 
+                      alt={product.title}
+                      className="w-full h-32 sm:h-36 object-cover rounded-lg mb-2 group-hover:scale-105 transition-transform"
+                    />
+                  )}
+                  {product.featured && (
+                    <div className="mb-2">
+                      <span className="px-2 py-1 rounded-full bg-yellow-500/20 text-yellow-300 text-xs font-medium border border-yellow-500/30">
+                        ⭐ Destacado
+                      </span>
                     </div>
-                    
-                    {/* Contenido - 70% */}
-                    <div className="w-[70%] flex flex-col justify-between">
-                      <div>
-                        <h3 className="text-sm sm:text-base font-semibold text-white mb-1 line-clamp-2 leading-tight">
-                          {product.title}
-                        </h3>
-                        <div className="text-white/70 text-xs mb-2 line-clamp-3 leading-tight">
-                          <p>{product.description}</p>
-                        </div>
-                      </div>
-                      
-                      <div className="flex items-end justify-between">
-                        <div className="text-left">
-                          {product.originalPrice && product.originalPrice > product.price && (
-                            <>
-                              <span className="text-white/50 line-through text-xs block">
-                                €{product.originalPrice}
-                              </span>
-                              <div className="flex items-center gap-2">
-                                <span className="text-white font-bold text-sm sm:text-base">
-                                  €{product.price}
-                                </span>
-                                <span className="text-green-400 text-xs font-medium">
-                                  ({Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)}% off)
-                                </span>
-                              </div>
-                            </>
-                          )}
-                          {(!product.originalPrice || product.originalPrice <= product.price) && (
+                  )}
+                  <h3 className="text-sm sm:text-base font-semibold text-white mb-1 line-clamp-2 leading-tight">
+                    {product.title}
+                  </h3>
+                  <div className="text-white/70 text-xs mb-2 flex-1 leading-tight max-h-20 overflow-y-auto scrollbar-thin scrollbar-thumb-white/20 scrollbar-track-transparent">
+                    <p className="whitespace-pre-wrap">
+                      {product.description}
+                    </p>
+                  </div>
+                  <div className="flex items-end justify-between">
+                    <div className="text-left">
+                      {product.originalPrice && product.originalPrice > product.price && (
+                        <>
+                          <span className="text-white/50 line-through text-xs block">
+                            €{product.originalPrice}
+                          </span>
+                          <div className="flex items-center gap-2">
                             <span className="text-white font-bold text-sm sm:text-base">
                               €{product.price}
                             </span>
-                          )}
-                        </div>
-                        <span className="px-2 py-1 rounded-full bg-white/20 text-white/80 text-xs">
-                          {product.category}
+                            <span className="text-green-400 text-xs font-medium">
+                              ({Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)}% off)
+                            </span>
+                          </div>
+                        </>
+                      )}
+                      {(!product.originalPrice || product.originalPrice <= product.price) && (
+                        <span className="text-white font-bold text-sm sm:text-base">
+                          €{product.price}
                         </span>
-                      </div>
+                      )}
                     </div>
+                    <span className="px-2 py-1 rounded-full bg-white/20 text-white/80 text-xs">
+                      {product.category}
+                    </span>
                   </div>
                 </div>
               </div>
-            ))}
-          </div>
+            </div>
+          ))}
         </div>
       </div>
 
