@@ -185,21 +185,12 @@ function HomePageContent() {
       {/* Top AdSense Ad Space */}
       <div className="w-full h-[60px] flex items-center justify-center border-b border-white/10">
         <div className="w-[320px] h-[50px] flex items-center justify-center">
-          <Script id="top-banner-config" strategy="lazyOnload">
-            {`
-              atOptions = {
-                'key' : '1fb4c7e89e9afdaf65fe05041740b21e',
-                'format' : 'iframe',
-                'height' : 50,
-                'width' : 320,
-                'params' : {}
-              };
-            `}
-          </Script>
           <Script 
-            src="//www.highperformanceformat.com/1fb4c7e89e9afdaf65fe05041740b21e/invoke.js"
+            src="//pl27507724.profitableratecpm.com/656d60aa1292caa70d9528146f9a8fb1/invoke.js"
             strategy="lazyOnload"
+            data-cfasync="false"
           />
+          <div id="container-656d60aa1292caa70d9528146f9a8fb1-top"></div>
         </div>
       </div>
       
@@ -403,12 +394,21 @@ function HomePageContent() {
       {/* Bottom AdSense Ad Space */}
       <div className="w-full h-[60px] flex items-center justify-center border-t border-white/10">
         <div className="w-[320px] h-[50px] flex items-center justify-center">
+          <Script id="bottom-banner-config" strategy="lazyOnload">
+            {`
+              atOptions = {
+                'key' : '1fb4c7e89e9afdaf65fe05041740b21e',
+                'format' : 'iframe',
+                'height' : 50,
+                'width' : 320,
+                'params' : {}
+              };
+            `}
+          </Script>
           <Script 
-            src="//pl27507724.profitableratecpm.com/656d60aa1292caa70d9528146f9a8fb1/invoke.js"
+            src="//www.highperformanceformat.com/1fb4c7e89e9afdaf65fe05041740b21e/invoke.js"
             strategy="lazyOnload"
-            data-cfasync="false"
           />
-          <div id="container-656d60aa1292caa70d9528146f9a8fb1"></div>
         </div>
       </div>
 
