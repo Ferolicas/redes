@@ -174,14 +174,23 @@ function CompleteOrderContent() {
 
           {/* Calendly Embed */}
           <div className="bg-gray-100 rounded-lg p-4 mb-6">
-            <iframe
-              src={`https://calendly.com/planetaketo?embed_domain=store.planetaketo.es&embed_type=Inline&hide_event_type_details=1&hide_gdpr_banner=1&primary_color=3b82f6&text_color=1f2937&prefill[email]=${encodeURIComponent(formData.email)}&prefill[name]=${encodeURIComponent(formData.nombre)}&prefill[a1]=${transactionData?.ketoCode || 'N/A'}`}
-              width="100%"
-              height="700"
-              frameBorder="0"
-              title="Schedule your consultation"
-              className="rounded-lg"
-            />
+            {transactionData?.productId?.calendlyUrl ? (
+              <iframe
+                src={`${transactionData.productId.calendlyUrl}?embed_domain=store.planetaketo.es&embed_type=Inline&hide_event_type_details=1&hide_gdpr_banner=1&primary_color=3b82f6&text_color=1f2937&prefill[email]=${encodeURIComponent(formData.email)}&prefill[name]=${encodeURIComponent(formData.nombre)}&prefill[a1]=${transactionData?.ketoCode || 'N/A'}`}
+                width="100%"
+                height="700"
+                frameBorder="0"
+                title="Schedule your consultation"
+                className="rounded-lg"
+              />
+            ) : (
+              <div className="h-[700px] flex items-center justify-center bg-gray-200 rounded-lg">
+                <div className="text-center text-gray-600">
+                  <p className="text-lg font-medium mb-2">Configuración de Calendly pendiente</p>
+                  <p className="text-sm">El administrador necesita configurar la URL de Calendly para este tipo de asesoría.</p>
+                </div>
+              </div>
+            )}
           </div>
 
           <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">

@@ -86,6 +86,13 @@ export const product = defineType({
       hidden: ({ document }) => document?.category !== 'Libro',
     }),
     defineField({
+      name: 'calendlyUrl',
+      title: 'URL de Calendly (para asesorías)',
+      type: 'url',
+      hidden: ({ document }) => document?.category !== 'Asesoria',
+      description: 'URL específica de Calendly para este tipo de asesoría',
+    }),
+    defineField({
       name: 'featured',
       title: 'Fijar',
       type: 'boolean',

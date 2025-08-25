@@ -21,7 +21,8 @@ export async function GET(request: Request) {
           title,
           category,
           description,
-          image
+          image,
+          calendlyUrl
         },
         status,
         paymentMethod,
