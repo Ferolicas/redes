@@ -4,7 +4,7 @@ import React, { Suspense } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { useState, useRef, useEffect } from 'react'
 import { useSearchParams } from 'next/navigation'
-import { ShoppingBag, ExternalLink, Sparkles, ChevronLeft, ChevronRight } from 'lucide-react'
+import { ShoppingBag, ExternalLink, Sparkles, ChevronLeft, ChevronRight, Youtube, Instagram, MessageCircle, Facebook, Mail } from 'lucide-react'
 import ProductCard from '../components/ProductCard'
 import AmazonCard from '../components/AmazonCard'
 import PurchaseModal from '../components/PurchaseModal'
@@ -64,6 +64,66 @@ function HomePageContent() {
     }
   }
 
+  const handleAmazonClick = async (listId: string, url: string) => {
+    try {
+      // Track the click
+      await fetch('/api/track-click', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          listId,
+          clickType: 'amazon_list'
+        }),
+      })
+    } catch (error) {
+      console.error('Error tracking click:', error)
+    }
+    
+    // Open the link
+    window.open(url, '_blank', 'noopener,noreferrer')
+  }
+
+  const handleProductClick = async (productId: string, product: Product) => {
+    try {
+      // Track the click
+      await fetch('/api/track-click', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          productId,
+          clickType: 'product'
+        }),
+      })
+    } catch (error) {
+      console.error('Error tracking click:', error)
+    }
+    
+    // Open the modal
+    setSelectedProduct(product)
+  }
+
+  // Track page visit
+  useEffect(() => {
+    const trackVisit = async () => {
+      try {
+        await fetch('/api/track-visit', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        })
+      } catch (error) {
+        console.error('Error tracking visit:', error)
+      }
+    }
+
+    trackVisit()
+  }, [])
+
   // Efecto para abrir modal del producto si se pasa por URL
   useEffect(() => {
     if (productId && products.length > 0) {
@@ -77,9 +137,61 @@ function HomePageContent() {
   const visibleProducts = products.slice(productsOffset, productsOffset + 4)
 
   return (
-    <div className="h-screen bg-gradient-to-br from-blue-600 via-purple-600 to-blue-800 text-white font-['Inter'] overflow-hidden">
-      {/* Header - 18% on mobile */}
-      <div className="h-[18vh] px-4 py-3 flex items-center border-b border-white/10">
+    <div className="h-screen bg-gradient-to-br from-blue-600 via-purple-600 to-blue-800 text-white font-['Inter'] overflow-hidden relative">
+      {/* Desktop Container - Centers the mobile view */}
+      <div className="h-full w-full lg:flex lg:items-center lg:justify-center lg:bg-black/20">
+        <div className="h-full w-full lg:max-w-md lg:h-full bg-gradient-to-br from-blue-600 via-purple-600 to-blue-800 lg:shadow-2xl relative overflow-hidden">
+      {/* Floating Social Media Buttons */}
+      <div className="fixed top-4 right-4 lg:absolute lg:top-4 lg:right-4 z-50 flex flex-col gap-2">
+        <a
+          href="https://www.youtube.com/@planetaketo"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="w-12 h-12 bg-red-600 hover:bg-red-700 rounded-full flex items-center justify-center transition-all hover:scale-110 shadow-lg"
+        >
+          <Youtube size={20} className="text-white" />
+        </a>
+        <a
+          href="https://www.instagram.com/planetaketorecetas/"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 rounded-full flex items-center justify-center transition-all hover:scale-110 shadow-lg"
+        >
+          <Instagram size={20} className="text-white" />
+        </a>
+        <a
+          href="https://www.tiktok.com/@planetaketo"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="w-12 h-12 bg-gray-900 hover:bg-black rounded-full flex items-center justify-center transition-all hover:scale-110 shadow-lg"
+        >
+          <MessageCircle size={20} className="text-white" />
+        </a>
+        <a
+          href="https://www.facebook.com/planetaketo"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="w-12 h-12 bg-blue-600 hover:bg-blue-700 rounded-full flex items-center justify-center transition-all hover:scale-110 shadow-lg"
+        >
+          <Facebook size={20} className="text-white" />
+        </a>
+        <a
+          href="mailto:info@planetaketo.es"
+          className="w-12 h-12 bg-green-600 hover:bg-green-700 rounded-full flex items-center justify-center transition-all hover:scale-110 shadow-lg"
+        >
+          <Mail size={20} className="text-white" />
+        </a>
+      </div>
+      
+      {/* Top AdSense Ad Space */}
+      <div className="w-full h-[8vh] flex items-center justify-center border-b border-white/10">
+        <div className="w-full max-w-sm h-16 bg-white/5 rounded-lg border border-white/20 flex items-center justify-center">
+          <span className="text-white/60 text-xs">AdSense - Top Banner</span>
+        </div>
+      </div>
+      
+      {/* Header - 15% on mobile */}
+      <div className="h-[15vh] px-4 py-3 flex items-center border-b border-white/10">
         <div className="flex items-center w-full gap-4">
           {/* Logo - 30% */}
           <div className="w-[30%] flex-shrink-0">
@@ -109,8 +221,8 @@ function HomePageContent() {
         </div>
       </div>
 
-      {/* Products Section - 52% on mobile */}
-      <div className="h-[52vh] px-4 py-3 border-b border-white/10">
+      {/* Products Section - 45% on mobile */}
+      <div className="h-[45vh] px-4 py-3 border-b border-white/10">
         <div className="flex items-center justify-between mb-3">
           <h2 className="text-lg sm:text-xl font-bold text-white flex items-center">
             <ShoppingBag className="mr-2" size={18} />
@@ -142,7 +254,7 @@ function HomePageContent() {
                 className="h-full"
               >
                 <div 
-                  onClick={() => setSelectedProduct(product)}
+                  onClick={() => handleProductClick(product._id, product)}
                   className="h-full rounded-xl bg-white/10 backdrop-blur-md border border-white/20 p-3 hover:bg-white/20 transition-all cursor-pointer group"
                 >
                   <div className="h-full flex flex-col">
@@ -196,8 +308,8 @@ function HomePageContent() {
         </div>
       </div>
 
-      {/* Amazon Lists Section - 30% on mobile */}
-      <div className="h-[30vh] px-4 py-3">
+      {/* Amazon Lists Section - 24% on mobile */}
+      <div className="h-[24vh] px-4 py-3">
         <div className="flex items-center justify-between mb-3">
           <h2 className="text-lg sm:text-xl font-bold text-white flex items-center">
             <ExternalLink className="mr-2" size={18} />
@@ -230,11 +342,9 @@ function HomePageContent() {
               className="flex-none w-64 sm:w-72 h-full"
               style={{ scrollSnapAlign: 'start' }}
             >
-              <a
-                href={list.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="block h-full rounded-xl bg-white/10 backdrop-blur-md border border-white/20 p-3 hover:bg-white/20 transition-all group"
+              <div
+                onClick={() => handleAmazonClick(list._id, list.url)}
+                className="block h-full rounded-xl bg-white/10 backdrop-blur-md border border-white/20 p-3 hover:bg-white/20 transition-all group cursor-pointer"
               >
                 <div className="h-full flex gap-3">
                   {/* 30% para imagen a la izquierda */}
@@ -268,7 +378,7 @@ function HomePageContent() {
                     </div>
                   </div>
                 </div>
-              </a>
+              </div>
             </div>
           ))}
         </div>
@@ -282,6 +392,13 @@ function HomePageContent() {
         </div>
       </div>
 
+      {/* Bottom AdSense Ad Space */}
+      <div className="w-full h-[8vh] flex items-center justify-center border-t border-white/10">
+        <div className="w-full max-w-sm h-16 bg-white/5 rounded-lg border border-white/20 flex items-center justify-center">
+          <span className="text-white/60 text-xs">AdSense - Bottom Banner</span>
+        </div>
+      </div>
+
       {/* Modal de Compra */}
       {selectedProduct && (
         <PurchaseModal
@@ -289,6 +406,8 @@ function HomePageContent() {
           onClose={() => setSelectedProduct(null)}
         />
       )}
+        </div> {/* Close lg:max-w-md container */}
+      </div> {/* Close lg:flex container */}
     </div>
   )
 }

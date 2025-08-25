@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { sanityClient } from '@/lib/sanity'
-import { sendPurchaseEmailWithNewsletter } from '@/lib/resend'
+import { sendPurchaseEmailWithNewsletter, sendAdvisoryPurchaseEmail, sendAdminAdvisoryNotification } from '@/lib/resend'
 import bcrypt from 'bcryptjs'
 
 export async function POST(request: Request) {
@@ -86,16 +86,37 @@ export async function POST(request: Request) {
       downloadUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/download/${existingTransaction.ketoCode}/${existingTransaction._id}`
     }
 
-    // Enviar email con newsletter
-    await sendPurchaseEmailWithNewsletter(
-      email,
-      nombre,
-      existingTransaction.ketoCode,
-      existingTransaction.productId.title,
-      rawPassword,
-      suscribirNewsletter,
-      downloadUrl
-    )
+    // Enviar email específico según el tipo de producto
+    if (existingTransaction.productId.category === 'Asesoria') {
+      // Enviar email de asesoría
+      await sendAdvisoryPurchaseEmail(
+        email,
+        nombre,
+        existingTransaction.ketoCode,
+        existingTransaction.productId.title,
+        rawPassword,
+        suscribirNewsletter
+      )
+      
+      // Enviar notificación al administrador
+      await sendAdminAdvisoryNotification(
+        nombre,
+        email,
+        existingTransaction.productId.title,
+        existingTransaction.ketoCode
+      )
+    } else {
+      // Enviar email con newsletter para productos digitales
+      await sendPurchaseEmailWithNewsletter(
+        email,
+        nombre,
+        existingTransaction.ketoCode,
+        existingTransaction.productId.title,
+        rawPassword,
+        suscribirNewsletter,
+        downloadUrl
+      )
+    }
 
     return NextResponse.json({ 
       success: true, 

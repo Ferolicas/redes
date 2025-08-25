@@ -2,7 +2,7 @@
 
 import { Suspense, useState, useEffect } from 'react'
 import { useSearchParams } from 'next/navigation'
-import { CheckCircle, User, Mail, Phone, Globe, Star } from 'lucide-react'
+import { CheckCircle, User, Mail, Phone, Globe, Star, Calendar, Clock } from 'lucide-react'
 import Link from 'next/link'
 
 function CompleteOrderContent() {
@@ -19,6 +19,8 @@ function CompleteOrderContent() {
   const [loading, setLoading] = useState(false)
   const [submitted, setSubmitted] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [transactionData, setTransactionData] = useState<any>(null)
+  const [showCalendly, setShowCalendly] = useState(false)
 
   // Detectar país automáticamente
   useEffect(() => {
@@ -72,6 +74,26 @@ function CompleteOrderContent() {
     }
   }, [formData.pais])
 
+  // Fetch transaction data on load to check if it's an advisory product
+  useEffect(() => {
+    const fetchTransactionData = async () => {
+      if (!paymentIntentId) return
+      
+      try {
+        const response = await fetch(`/api/get-transaction?paymentIntentId=${paymentIntentId}`)
+        const data = await response.json()
+        
+        if (data.success) {
+          setTransactionData(data.transaction)
+        }
+      } catch (error) {
+        console.error('Error fetching transaction:', error)
+      }
+    }
+
+    fetchTransactionData()
+  }, [paymentIntentId])
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
@@ -92,7 +114,12 @@ function CompleteOrderContent() {
       const data = await response.json()
 
       if (data.success) {
-        setSubmitted(true)
+        // If it's an advisory product, show Calendly instead of completion
+        if (transactionData?.productId?.category === 'Asesoria') {
+          setShowCalendly(true)
+        } else {
+          setSubmitted(true)
+        }
       } else {
         setError(data.error || 'Error al procesar la información')
       }
@@ -113,6 +140,60 @@ function CompleteOrderContent() {
           <Link
             href="/"
             className="inline-block bg-gradient-to-r from-blue-500 to-purple-600 text-white py-3 px-6 rounded-lg font-medium"
+          >
+            Volver al inicio
+          </Link>
+        </div>
+      </div>
+    )
+  }
+
+  if (showCalendly) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-950 via-purple-950 to-slate-950 flex items-center justify-center p-4">
+        <div className="max-w-2xl w-full bg-white rounded-2xl p-8 text-center">
+          <Calendar className="w-16 h-16 text-blue-500 mx-auto mb-4" />
+          <h1 className="text-2xl font-bold text-gray-900 mb-2">
+            ¡Pago Exitoso! Ahora Agenda tu Asesoría
+          </h1>
+          <p className="text-gray-600 mb-6">
+            Selecciona la fecha y hora que mejor se adapte a tu agenda para tu sesión de {transactionData?.productId?.title}
+          </p>
+          
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+            <div className="flex items-center justify-center gap-2 mb-2">
+              <Clock className="w-5 h-5 text-blue-600" />
+              <span className="font-semibold text-blue-800">Información Importante</span>
+            </div>
+            <ul className="text-sm text-blue-700 text-left space-y-1">
+              <li>• Recibirás un email de confirmación con el enlace de la videollamada</li>
+              <li>• Te notificaremos 24h antes de tu cita</li>
+              <li>• Puedes reprogramar hasta 2h antes de la sesión</li>
+            </ul>
+          </div>
+
+          {/* Calendly Embed */}
+          <div className="bg-gray-100 rounded-lg p-4 mb-6">
+            <iframe
+              src={`https://calendly.com/planetaketo?embed_domain=store.planetaketo.es&embed_type=Inline&hide_event_type_details=1&hide_gdpr_banner=1&primary_color=3b82f6&text_color=1f2937&prefill[email]=${encodeURIComponent(formData.email)}&prefill[name]=${encodeURIComponent(formData.nombre)}&prefill[a1]=${transactionData?.ketoCode || 'N/A'}`}
+              width="100%"
+              height="700"
+              frameBorder="0"
+              title="Schedule your consultation"
+              className="rounded-lg"
+            />
+          </div>
+
+          <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
+            <p className="text-sm text-green-700">
+              <strong>📧 Email de confirmación enviado</strong><br />
+              Te hemos enviado todos los detalles de tu compra y asesoría.
+            </p>
+          </div>
+
+          <Link
+            href="/"
+            className="block w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white py-3 rounded-lg font-medium"
           >
             Volver al inicio
           </Link>

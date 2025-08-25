@@ -24,7 +24,8 @@
       "Bash(curl:*)",
       "Bash(npx vercel logs:*)",
       "Bash(git reset:*)",
-      "Bash(npx vercel:*)"
+      "Bash(npx vercel:*)",
+      "Bash(git pull:*)"
     ],
     "deny": [],
     "ask": []

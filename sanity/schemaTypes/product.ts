@@ -93,6 +93,13 @@ export const product = defineType({
       description: 'Mostrar este producto como destacado',
     }),
     defineField({
+      name: 'clickCount',
+      title: 'Número de clicks',
+      type: 'number',
+      initialValue: 0,
+      readOnly: true,
+    }),
+    defineField({
       name: 'createdAt',
       title: 'Fecha de Creación',
       type: 'datetime',
@@ -107,15 +114,16 @@ export const product = defineType({
       originalPrice: 'originalPrice',
       category: 'category',
       featured: 'featured',
+      clickCount: 'clickCount',
     },
     prepare(selection) {
-      const { title, media, price, originalPrice, category, featured } = selection
+      const { title, media, price, originalPrice, category, featured, clickCount } = selection
       const priceText = originalPrice && originalPrice > price 
         ? `€${price} (antes €${originalPrice})` 
         : `€${price}`
       return {
         title: `${featured ? '📌 ' : ''}${title}`,
-        subtitle: `${priceText} - ${category}`,
+        subtitle: `${priceText} - ${category} • ${clickCount || 0} clicks`,
         media,
       }
     },
@@ -146,6 +154,11 @@ export const product = defineType({
       title: 'Precio mayor a menor',
       name: 'priceDesc',
       by: [{ field: 'price', direction: 'desc' }],
+    },
+    {
+      title: 'Más clicks',
+      name: 'clicksDesc',
+      by: [{ field: 'clickCount', direction: 'desc' }],
     },
   ],
 })

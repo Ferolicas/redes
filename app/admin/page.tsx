@@ -14,7 +14,9 @@ import {
   ChevronUp,
   List,
   LogOut,
-  Mail
+  Mail,
+  Eye,
+  MousePointer
 } from 'lucide-react'
 import { urlFor } from '@/lib/sanity'
 
@@ -632,6 +634,12 @@ export default function AdminPage() {
   const [listsLoading, setListsLoading] = useState(true)
   const [listsError, setListsError] = useState(null)
 
+  // --- Estados para analytics ---
+  const [analytics, setAnalytics] = useState<any>(null)
+  const [analyticsLoading, setAnalyticsLoading] = useState(true)
+  const [analyticsError, setAnalyticsError] = useState(null)
+  const [analyticsPeriod, setAnalyticsPeriod] = useState('today')
+
   // --- Hook para cargar productos desde la API ---
   useEffect(() => {
     const fetchProducts = async () => {
@@ -747,6 +755,29 @@ export default function AdminPage() {
     fetchOrders();
   }, [orderStatusFilter]);
 
+  // --- Hook para cargar analytics ---
+  useEffect(() => {
+    const fetchAnalytics = async () => {
+      setAnalyticsLoading(true);
+      setAnalyticsError(null);
+      try {
+        const response = await fetch(`/api/analytics?period=${analyticsPeriod}`);
+        if (!response.ok) {
+          throw new Error('Error al obtener analytics');
+        }
+        const data = await response.json();
+        setAnalytics(data.data);
+      } catch (err: any) {
+        setAnalyticsError(err.message);
+        console.error(err);
+      } finally {
+        setAnalyticsLoading(false);
+      }
+    };
+
+    fetchAnalytics();
+  }, [analyticsPeriod]);
+
 
   // Usar estadísticas reales o valores por defecto
   const stats = dashboardStats || {
@@ -786,6 +817,12 @@ export default function AdminPage() {
           title: `${stats?.amazonLists?.total || 0} listas`,
           amount: stats?.amazonLists?.total || 0,
           count: 0
+        }
+      case 'analytics':
+        return {
+          title: `${analytics?.summary?.totalVisitsOverall || 0} visitas totales`,
+          amount: analytics?.summary?.totalVisitsPeriod || 0,
+          count: analytics?.summary?.daysInPeriod || 0
         }
       default:
         return { title: 'Ventas Totales', amount: 0, count: 0 }
@@ -1011,7 +1048,7 @@ export default function AdminPage() {
         <h1 className="mb-3 text-7xl font-extralight tracking-tight">
           {activeView === 'dashboard' ? `€${currentData.amount.toFixed(2)}` : currentData.amount}
         </h1>
-        <p className="text-sm text-white/80">{activeView === 'lists' || activeView === 'products' || activeView === 'orders' ? '' : `${currentData.count} ventas`}</p>
+        <p className="text-sm text-white/80">{activeView === 'lists' || activeView === 'products' || activeView === 'orders' || activeView === 'analytics' ? '' : `${currentData.count} ventas`}</p>
       </div>
 
       {/* Botones de acción principales */}
@@ -1205,8 +1242,105 @@ export default function AdminPage() {
             </div>
           )}
 
+          {activeView === 'analytics' && (
+            <div>
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="font-semibold text-white text-lg">Analytics</h3>
+                <select 
+                  value={analyticsPeriod} 
+                  onChange={(e) => setAnalyticsPeriod(e.target.value)}
+                  className="rounded-xl bg-slate-800 border border-slate-600 text-white text-sm px-3 py-2 focus:outline-none focus:border-blue-500"
+                >
+                  <option value="today">Hoy</option>
+                  <option value="week">Esta semana</option>
+                  <option value="month">Este mes</option>
+                  <option value="all">Todo el tiempo</option>
+                </select>
+              </div>
+              
+              {analyticsLoading ? (
+                <p className="text-center text-slate-400">Cargando analytics...</p>
+              ) : analyticsError ? (
+                <p className="text-center text-red-400">{analyticsError}</p>
+              ) : analytics ? (
+                <div className="space-y-6">
+                  {/* Summary Cards */}
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="rounded-2xl border border-slate-700/50 bg-slate-800/80 backdrop-blur-sm p-5 text-center hover:bg-slate-800 transition-all group">
+                      <Eye className="mx-auto mb-3 text-blue-400 group-hover:scale-110 transition-transform" size={24} />
+                      <div className="font-bold text-white text-lg">{analytics.summary.totalVisitsPeriod}</div>
+                      <div className="text-xs text-slate-400 font-medium">Visitas ({analyticsPeriod})</div>
+                    </div>
+                    <div className="rounded-2xl border border-slate-700/50 bg-slate-800/80 backdrop-blur-sm p-5 text-center hover:bg-slate-800 transition-all group">
+                      <MousePointer className="mx-auto mb-3 text-green-400 group-hover:scale-110 transition-transform" size={24} />
+                      <div className="font-bold text-white text-lg">{analytics.summary.totalVisitsOverall}</div>
+                      <div className="text-xs text-slate-400 font-medium">Visitas Totales</div>
+                    </div>
+                  </div>
+
+                  {/* Top Products */}
+                  {analytics.topProducts && analytics.topProducts.length > 0 && (
+                    <div>
+                      <h4 className="mb-4 text-sm font-medium text-slate-300">Productos más clickeados</h4>
+                      <div className="space-y-2">
+                        {analytics.topProducts.slice(0, 5).map((item: any, index: number) => (
+                          <div key={item.product._id} className="flex items-center justify-between rounded-xl bg-slate-800/80 backdrop-blur-sm p-3 border border-slate-700/50">
+                            <div className="flex items-center gap-3">
+                              <div className="w-8 h-8 rounded-lg bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center text-white font-bold text-sm">
+                                {index + 1}
+                              </div>
+                              <div>
+                                <p className="font-medium text-white text-sm">{item.product.title}</p>
+                                <p className="text-xs text-slate-400">{item.product.category}</p>
+                              </div>
+                            </div>
+                            <div className="text-right">
+                              <div className="font-semibold text-white">{item.clicks}</div>
+                              <div className="text-xs text-slate-400">clicks</div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Top Lists */}
+                  {analytics.topLists && analytics.topLists.length > 0 && (
+                    <div>
+                      <h4 className="mb-4 text-sm font-medium text-slate-300">Listas más clickeadas</h4>
+                      <div className="space-y-2">
+                        {analytics.topLists.slice(0, 5).map((item: any, index: number) => (
+                          <div key={item.list._id} className="flex items-center justify-between rounded-xl bg-slate-800/80 backdrop-blur-sm p-3 border border-slate-700/50">
+                            <div className="flex items-center gap-3">
+                              <div className="w-8 h-8 rounded-lg bg-gradient-to-r from-orange-500 to-red-500 flex items-center justify-center text-white font-bold text-sm">
+                                {index + 1}
+                              </div>
+                              <div>
+                                <p className="font-medium text-white text-sm">{item.list.title}</p>
+                                <p className="text-xs text-slate-400">{item.list.category}</p>
+                              </div>
+                            </div>
+                            <div className="text-right">
+                              <div className="font-semibold text-white">{item.clicks}</div>
+                              <div className="text-xs text-slate-400">clicks</div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div className="text-center text-slate-400 py-8">
+                  <Eye size={48} className="mx-auto mb-4 opacity-50" />
+                  <p>No hay datos de analytics aún</p>
+                </div>
+              )}
+            </div>
+          )}
+
           {/* Sección Ver todo - Solo para dashboard y products */}
-          {activeView !== 'orders' && (
+          {activeView !== 'orders' && activeView !== 'analytics' && (
             <>
               <div 
                 className="mt-8 cursor-pointer text-center"
@@ -1302,6 +1436,17 @@ export default function AdminPage() {
           >
             <ShoppingBag size={20} />
             <span className="text-xs font-medium">Pedidos</span>
+          </button>
+          <button
+            onClick={() => setActiveView('analytics')}
+            className={`flex flex-col items-center gap-1 transition-all ${
+              activeView === 'analytics' 
+                ? 'text-white scale-105' 
+                : 'text-slate-500 hover:text-slate-300'
+            }`}
+          >
+            <Eye size={20} />
+            <span className="text-xs font-medium">Analytics</span>
           </button>
         </div>
       </div>

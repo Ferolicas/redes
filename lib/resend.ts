@@ -259,3 +259,134 @@ export const sendNewProductNewsletter = async (
 
   return data
 }
+
+export const sendAdvisoryPurchaseEmail = async (
+  email: string,
+  name: string,
+  ketoCode: string,
+  productTitle: string,
+  password: string,
+  subscribedToNewsletter: boolean = false
+) => {
+  const { data, error } = await resend.emails.send({
+    from: 'Planeta Keto <noreply@planetaketo.es>',
+    to: [email],
+    subject: `¡Asesoría Confirmada! - ${productTitle}`,
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 40px; text-align: center; color: white;">
+          <h1 style="margin: 0; font-size: 28px;">¡Gracias ${name}!</h1>
+          <p style="margin: 10px 0 0 0; font-size: 16px;">Tu asesoría ha sido confirmada</p>
+        </div>
+        
+        <div style="padding: 30px; background: #f8f9fa;">
+          <h2 style="color: #333;">Detalles de tu asesoría:</h2>
+          <p><strong>Servicio:</strong> ${productTitle}</p>
+          <p><strong>Código de transacción:</strong> ${ketoCode}</p>
+          <p><strong>Contraseña de acceso:</strong> ${password}</p>
+          
+          <div style="margin: 30px 0; padding: 20px; background: #e3f2fd; border-radius: 8px; border-left: 4px solid #2196f3;">
+            <h3 style="margin: 0 0 15px 0; color: #1565c0;">📅 Próximos pasos para tu asesoría:</h3>
+            <ol style="margin: 0; padding-left: 20px; color: #333;">
+              <li><strong>Programa tu cita:</strong> Habrás visto el calendario en la página anterior para seleccionar tu fecha y hora preferida.</li>
+              <li><strong>Confirmación automática:</strong> Recibirás un email de Calendly con los detalles de tu cita.</li>
+              <li><strong>Enlace de videollamada:</strong> Se incluirá en el email de confirmación de la cita.</li>
+              <li><strong>Recordatorio:</strong> Te notificaremos 24h antes de tu sesión.</li>
+            </ol>
+          </div>
+          
+          <div style="margin: 30px 0; padding: 20px; background: #e8f5e8; border-radius: 8px; border-left: 4px solid #4caf50;">
+            <h3 style="margin: 0 0 10px 0; color: #2e7d32;">📋 Información importante para tu sesión:</h3>
+            <ul style="margin: 0; padding-left: 20px; color: #333;">
+              <li><strong>Duración:</strong> La sesión tendrá una duración aproximada de 60 minutos</li>
+              <li><strong>Preparación:</strong> Ten lista cualquier pregunta específica sobre tu alimentación keto</li>
+              <li><strong>Reprogramación:</strong> Puedes cambiar la fecha hasta 2h antes de la cita</li>
+              <li><strong>Soporte:</strong> Si tienes dudas, responde a este email</li>
+            </ul>
+          </div>
+          
+          ${subscribedToNewsletter ? `
+            <div style="margin: 30px 0; padding: 20px; background: #fff3cd; border-radius: 8px; border-left: 4px solid #ffc107;">
+              <h3 style="margin: 0 0 10px 0; color: #856404;">🎉 ¡Bienvenido a nuestro Newsletter!</h3>
+              <p style="margin: 0; color: #333;">
+                Te has suscrito exitosamente. Recibirás notificaciones sobre nuevos productos, promociones especiales 
+                y un <strong>20% de descuento permanente</strong> en futuras compras.
+              </p>
+            </div>
+          ` : ''}
+          
+          <div style="text-align: center; margin: 30px 0;">
+            <h3 style="color: #333; margin-bottom: 15px;">🌟 ¡Nos vemos pronto en tu asesoría!</h3>
+            <p style="color: #666; margin-bottom: 20px;">
+              Estamos emocionados de ayudarte en tu viaje hacia una alimentación keto exitosa.
+            </p>
+          </div>
+          
+          <hr style="margin: 30px 0; border: none; border-top: 1px solid #ddd;">
+          
+          <p style="text-align: center; color: #666; font-size: 14px;">
+            ¿Necesitas ayuda? Escríbenos a <a href="mailto:info@planetaketo.es" style="color: #667eea;">info@planetaketo.es</a><br>
+            <a href="https://store.planetaketo.es" style="color: #667eea; text-decoration: none;">🌐 store.planetaketo.es</a>
+          </p>
+        </div>
+      </div>
+    `,
+  })
+
+  if (error) {
+    console.error('Error sending advisory email:', error)
+    throw error
+  }
+
+  return data
+}
+
+export const sendAdminAdvisoryNotification = async (
+  customerName: string,
+  customerEmail: string,
+  productTitle: string,
+  ketoCode: string,
+  appointmentDateTime?: string
+) => {
+  const { data, error } = await resend.emails.send({
+    from: 'Planeta Keto <noreply@planetaketo.es>',
+    to: ['info@planetaketo.es'],
+    subject: `🗓️ Nueva Asesoría Vendida - ${productTitle}`,
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 30px; text-align: center; color: white;">
+          <h1 style="margin: 0; font-size: 24px;">🗓️ Nueva Asesoría Vendida</h1>
+        </div>
+        
+        <div style="padding: 30px; background: #f8f9fa;">
+          <h2 style="color: #333;">Detalles de la venta:</h2>
+          
+          <div style="background: #fff; padding: 20px; border-radius: 8px; margin: 20px 0; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+            <p><strong>Cliente:</strong> ${customerName}</p>
+            <p><strong>Email:</strong> ${customerEmail}</p>
+            <p><strong>Servicio:</strong> ${productTitle}</p>
+            <p><strong>Código de transacción:</strong> ${ketoCode}</p>
+            ${appointmentDateTime ? `<p><strong>Fecha y hora programada:</strong> ${appointmentDateTime}</p>` : `<p><strong>Estado:</strong> Esperando programación de cita</p>`}
+          </div>
+          
+          <div style="background: #e3f2fd; padding: 20px; border-radius: 8px; border-left: 4px solid #2196f3;">
+            <h3 style="margin: 0 0 10px 0; color: #1565c0;">📋 Recordatorio:</h3>
+            <ul style="margin: 0; padding-left: 20px; color: #333;">
+              <li>El cliente debe programar su cita usando Calendly</li>
+              <li>Recibirás una notificación cuando programe la sesión</li>
+              <li>Prepara el material específico para ${productTitle}</li>
+              <li>Revisa el perfil del cliente antes de la sesión</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    `,
+  })
+
+  if (error) {
+    console.error('Error sending admin notification:', error)
+    throw error
+  }
+
+  return data
+}
